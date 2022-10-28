@@ -5,7 +5,7 @@ import {
 import Constants from '../constants';
 
 /**
- *  GET '/v1/w2w/users/:did/messages
+ *  GET '/v1/w2w/users/:did/chats
  */
 
 export type ChatOptionsType = {
@@ -22,11 +22,8 @@ export const getChat = async (
   } = options || {};
 
   const API_BASE_URL = getAPIBaseUrls(env);
-  const apiEndpoint = `${API_BASE_URL}/v1/w2w/users/${user}/messages`;
-
-
+  const apiEndpoint = `${API_BASE_URL}/v1/w2w/users/${user}/chats`;
   const requestUrl = `${apiEndpoint}`;
-
   return axios.get(requestUrl)
     .catch((err) => {
       console.error(`[EPNS-SDK] - API ${requestUrl}: `, err);
