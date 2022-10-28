@@ -3,6 +3,7 @@ import {
   getAPIBaseUrls,
 } from '../helpers';
 import Constants from '../constants';
+import { Environment } from '../types';
 
 /**
  *  PUT '/v1/w2w/intents
@@ -14,7 +15,7 @@ export type ChatUpdateIntentOptionsType = {
   signature: string;
   status: string;
   sigType: string;
-  env?: string;
+  env?: Environment;
 }
 
 export const updateIntent = async (

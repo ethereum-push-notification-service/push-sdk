@@ -3,13 +3,14 @@ import {
   getAPIBaseUrls,
 } from '../helpers';
 import Constants from '../constants';
+import { Environment } from '../types';
 
 /**
  *  GET '/v1/w2w/users
  */
 
 export type ChatUsersOptionsType = {
-  env?: string;
+  env?: Environment;
 }
 
 export const getUsers = async (

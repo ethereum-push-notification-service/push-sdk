@@ -3,6 +3,7 @@ import {
   getAPIBaseUrls,
 } from '../helpers';
 import Constants from '../constants';
+import { Environment } from '../types';
 
 /**
  *  POST '/v1/w2w/users
@@ -15,7 +16,7 @@ export type ChatCreateUserOptionsType = {
   encryptionType?: string;
   signature?: string;
   sigType?: string;
-  env?: string;
+  env?: Environment;
 }
 
 export const createUser = async (

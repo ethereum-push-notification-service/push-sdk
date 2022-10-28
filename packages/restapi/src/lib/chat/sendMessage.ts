@@ -3,6 +3,7 @@ import {
   getAPIBaseUrls,
 } from '../helpers';
 import Constants from '../constants';
+import { Environment } from '../types';
 
 /**
  *  POST '/v1/w2w/messages
@@ -17,7 +18,7 @@ export type ChatSendMessageOptionsType = {
   encType: string;
   encryptedSecret: string;
   sigType: string;
-  env?: string;
+  env?: Environment;
 }
 
 export const sendMessage = async (

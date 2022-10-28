@@ -185,3 +185,5 @@ export interface AccountEnvOptionsType {
   env?: string;
   account: string;
 }
+
+export type Environment = 'prod' | 'staging' | 'dev';

@@ -3,6 +3,7 @@ import {
   getAPIBaseUrls,
 } from '../helpers';
 import Constants from '../constants';
+import { Environment } from '../types';
 
 /**
  *  PUT '/v1/w2w/users/:did
@@ -12,7 +13,7 @@ export type ChatUpdateUserOptionsType = {
   user: string;
   profilePictureCID?: string;
   name?: string;
-  env?: string;
+  env?: Environment;
 }
 
 export const updateUser = async (
