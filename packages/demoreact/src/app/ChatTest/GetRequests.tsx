@@ -16,7 +16,11 @@ const GetRequestsTest = () => {
   const { env, isCAIP } = useContext<any>(EnvContext);
   const [isLoading, setLoading] = useState(false);
   const [getRequestsResponse, setGetRequestsResponse] = useState<any>('');
+  const [toDecrypt, setToDecrypt] = useState<boolean>(false);
 
+  const updateToDecrypt = (e: React.SyntheticEvent<HTMLElement>) => {
+    setToDecrypt((e.target as HTMLInputElement).checked);
+  };
   const testGetRequests = async () => {
     try {
       setLoading(true);
@@ -31,6 +35,7 @@ const GetRequestsTest = () => {
       const response = await PushAPI.chat.requests({
         account: isCAIP ? walletToPCAIP10(account) : account,
         pgpPrivateKey: pvtkey,
+        toDecrypt,
         env,
       });
 
@@ -50,14 +55,22 @@ const GetRequestsTest = () => {
       <Loader show={isLoading} />
 
       <Section>
-        <SectionItem>
-          <div>
+        <div>
+          <SectionItem>
+            <input
+              type="checkbox"
+              onChange={updateToDecrypt}
+              checked={toDecrypt}
+              style={{ width: 20, height: 20 }}
+            />
+            <label>Decrypt response</label>
+          </SectionItem>
+          <SectionItem style={{ marginTop: 20 }}>
             <SectionButton onClick={testGetRequests}>
               get requests
             </SectionButton>
-          </div>
-        </SectionItem>
-
+          </SectionItem>
+        </div>
         <SectionItem>
           <div>
             {getRequestsResponse ? (

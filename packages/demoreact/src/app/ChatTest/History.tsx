@@ -18,17 +18,17 @@ const HistoryTest = () => {
   const [response, setResponse] = useState<any>({});
   const [threadhash, setThreadhash] = useState<string>('');
   const [limit, setLimit] = useState<number>(10);
+  const [toDecrypt, setToDecrypt] = useState<boolean>(false);
 
+  const updateToDecrypt = (e: React.SyntheticEvent<HTMLElement>) => {
+    setToDecrypt((e.target as HTMLInputElement).checked);
+  };
   const updateThreadhash = (e: React.SyntheticEvent<HTMLElement>) => {
-    setThreadhash(
-      (e.target as HTMLInputElement).value
-    );
+    setThreadhash((e.target as HTMLInputElement).value);
   };
 
   const updateFetchLimit = (e: React.SyntheticEvent<HTMLElement>) => {
-    setLimit(
-      parseInt((e.target as HTMLInputElement).value)
-    );
+    setLimit(parseInt((e.target as HTMLInputElement).value));
   };
 
   const testHistory = async () => {
@@ -47,8 +47,9 @@ const HistoryTest = () => {
       const response = await PushAPI.chat.history({
         threadhash,
         account,
-        pgpPrivateKey:pvtkey,
+        pgpPrivateKey: pvtkey,
         limit,
+        toDecrypt,
         env,
       });
 
@@ -68,20 +69,35 @@ const HistoryTest = () => {
       <Loader show={isLoading} />
 
       <Section>
-      <SectionItem>
+        <SectionItem>
           <label>Threadhash</label>
-          <input type="text" onChange={updateThreadhash} value={threadhash} style={{ width: 400, height: 30 }} />
+          <input
+            type="text"
+            onChange={updateThreadhash}
+            value={threadhash}
+            style={{ width: 400, height: 30 }}
+          />
           <label>Fetch Limit</label>
-          <input type="number" onChange={updateFetchLimit} value={limit} style={{ width: 400, height: 30 }} />
+          <input
+            type="number"
+            onChange={updateFetchLimit}
+            value={limit}
+            style={{ width: 400, height: 30 }}
+          />
+          <input
+            type="checkbox"
+            onChange={updateToDecrypt}
+            checked={toDecrypt}
+            style={{ width: 20, height: 20 }}
+          />
+          <label>Decrypt response</label>
           <SectionButton onClick={testHistory}>get history</SectionButton>
         </SectionItem>
 
         <SectionItem>
           <div>
             {response ? (
-              <CodeFormatter>
-                {JSON.stringify(response, null, 4)}
-              </CodeFormatter>
+              <CodeFormatter>{JSON.stringify(response, null, 4)}</CodeFormatter>
             ) : null}
           </div>
         </SectionItem>

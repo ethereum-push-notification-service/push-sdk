@@ -12,12 +12,13 @@ import { getInboxLists } from './helpers';
 export type ChatsOptionsType = {
   account: string;
   pgpPrivateKey?: string;
+  toDecrypt?: boolean;
   env?: string;
 };
 
 // Only get the chats not the intent
 export const chats = async (options: ChatsOptionsType): Promise<Message[]> => {
-  const { account, pgpPrivateKey, env = Constants.ENV.PROD } = options || {};
+  const { account, pgpPrivateKey, env = Constants.ENV.PROD, toDecrypt = false } = options || {};
   const user = walletToPCAIP10(account);
 
   const API_BASE_URL = getAPIBaseUrls(env);
@@ -32,7 +33,7 @@ export const chats = async (options: ChatsOptionsType): Promise<Message[]> => {
     const messages: Message[] = await getInboxLists({
       lists: chats,
       user,
-      toDecrypt: true,
+      toDecrypt,
       pgpPrivateKey,
       env,
     });

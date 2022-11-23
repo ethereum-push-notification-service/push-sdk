@@ -12,13 +12,14 @@ import { getInboxLists } from './helpers';
 export type RequestOptionsType = {
   account: string; // caip10
   pgpPrivateKey?: string;
+  toDecrypt?: boolean;
   env?: string;
 };
 
 export const requests = async (
   options: RequestOptionsType
 ): Promise<Message[]> => {
-  const { account, pgpPrivateKey, env = Constants.ENV.PROD } = options || {};
+  const { account, pgpPrivateKey, env = Constants.ENV.PROD, toDecrypt = false } = options || {};
   const user = walletToPCAIP10(account);
   const API_BASE_URL = getAPIBaseUrls(env);
   const apiEndpoint = `${API_BASE_URL}/v1/chat/users/${user}/requests`;
@@ -32,7 +33,7 @@ export const requests = async (
     const messages: Message[] = await getInboxLists({
       lists: requests,
       user,
-      toDecrypt: true,
+      toDecrypt,
       pgpPrivateKey,
       env,
     });

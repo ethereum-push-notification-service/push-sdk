@@ -5,12 +5,9 @@ import {
   Section,
 } from '../components/StyledComponents';
 import Loader from '../components/Loader';
-import { Web3Context, EnvContext } from '../context';
 
 
 const ChatTest = () => {
-  const { library, account, chainId } = useContext<any>(Web3Context);
-  const { env, isCAIP } = useContext<any>(EnvContext);
   const [isLoading, setLoading] = useState(false);
 
   const NavMenu = styled.div`
