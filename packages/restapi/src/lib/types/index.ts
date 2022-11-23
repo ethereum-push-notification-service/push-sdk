@@ -192,7 +192,6 @@ export interface ChatOptionsType extends AccountEnvOptionsType {
   receiverAddress: string;
   pgpPrivateKey?: string;
   connectedUser: IConnectedUser;
-  apiKey?: string;
 };
 
 export interface ConversationHashOptionsType extends AccountEnvOptionsType {

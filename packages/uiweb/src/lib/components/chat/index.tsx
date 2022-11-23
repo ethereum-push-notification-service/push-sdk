@@ -14,7 +14,6 @@ export type ChatProps = {
   // greetingMsg?: string;
   modalTitle?: string;
   primaryColor?: string;
-  apiKey?: string;
   env?: string;
 };
 
@@ -28,7 +27,6 @@ export const Chat: React.FC<ChatProps> = ({
   // greetingMsg = Constants.DEFAULT_GREETING_MSG,
   modalTitle = Constants.DEFAULT_TITLE,
   primaryColor = Constants.COLOR.PRIMARY,
-  apiKey = '',
   env = Constants.ENV.PROD,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -51,7 +49,6 @@ export const Chat: React.FC<ChatProps> = ({
     // greetingMsg,
     modalTitle,
     primaryColor,
-    apiKey,
     env,
   };
 

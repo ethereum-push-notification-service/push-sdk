@@ -18,7 +18,6 @@ export const start = async (options: Omit<ChatOptionsType, 'account'>) => {
     messageType = 'Text',
     receiverAddress,
     connectedUser,
-    apiKey = '',
     env = Constants.ENV.PROD,
   } = options || {};
 
@@ -32,9 +31,6 @@ export const start = async (options: Omit<ChatOptionsType, 'account'>) => {
 
   const API_BASE_URL = getAPIBaseUrls(env);
   const apiEndpoint = `${API_BASE_URL}/v1/chat/request`;
-  const headers = {
-    'authorization': `Bearer ${apiKey}`,
-  };
   const body = {
     fromDID: connectedUser.wallets.split(',')[0],
     toDID: walletToPCAIP10(receiverAddress),
@@ -49,7 +45,7 @@ export const start = async (options: Omit<ChatOptionsType, 'account'>) => {
   };
 
   return axios
-    .post(apiEndpoint, body, { headers })
+    .post(apiEndpoint, body)
     .then((response) => {
       return response.data;
     })

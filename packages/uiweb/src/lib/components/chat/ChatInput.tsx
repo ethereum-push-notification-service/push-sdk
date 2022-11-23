@@ -5,14 +5,13 @@ import AttachmentIcon from '../../icons/chat/attachment.svg';
 import styled from 'styled-components';
 import * as PushAPI from '@pushprotocol/restapi';
 import { ChatMainStateContext, ChatPropsContext } from '../../context';
-import { createUserIfNecessary } from '../../helpers';
 // import Picker from 'emoji-picker-react';
 
 export const ChatInput: React.FC = () => {
   const [showEmojis, setShowEmojis] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [filesUploading, setFileUploading] = useState<boolean>(false);
-  const { account, env, supportAddress, apiKey } =
+  const { account, env, supportAddress } =
     useContext<any>(ChatPropsContext);
 
   const {
@@ -42,7 +41,6 @@ export const ChatInput: React.FC = () => {
         receiverAddress: supportAddress,
         account: account,
         pgpPrivateKey: connectedUser?.privateKey,
-        apiKey,
         env,
       });
 

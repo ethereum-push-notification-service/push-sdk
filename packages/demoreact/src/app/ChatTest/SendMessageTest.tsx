@@ -17,7 +17,6 @@ const SendMessageTest = () => {
   const [isLoading, setLoading] = useState(false);
   const [messageContent, setMessageContent] = useState<string>('');
   const [receiverAddress, setReceiverAddress] = useState<string>('');
-  const [apiKey, setApiKey] = useState<string>('');
 
   const [sendResponse, setSendResponse] = useState<any>('');
 
@@ -27,10 +26,6 @@ const SendMessageTest = () => {
 
   const updateReceiverAddress = (e: React.SyntheticEvent<HTMLElement>) => {
     setReceiverAddress((e.target as HTMLInputElement).value);
-  };
-
-  const updateApiKey = (e: React.SyntheticEvent<HTMLElement>) => {
-    setApiKey((e.target as HTMLInputElement).value);
   };
 
   const testSendMessage = async () => {
@@ -50,7 +45,6 @@ const SendMessageTest = () => {
         receiverAddress,
         account: isCAIP ? walletToPCAIP10(account) : account,
         pgpPrivateKey: pvtkey,
-        apiKey,
         env,
       });
 
@@ -87,15 +81,6 @@ const SendMessageTest = () => {
                 type="text"
                 onChange={updateReceiverAddress}
                 value={receiverAddress}
-                style={{ width: 400, height: 30 }}
-              />
-            </SectionItem>
-            <SectionItem style={{ marginTop: 20 }}>
-              <label>Api Key</label>
-              <input
-                type="text"
-                onChange={updateApiKey}
-                value={apiKey}
                 style={{ width: 400, height: 30 }}
               />
             </SectionItem>

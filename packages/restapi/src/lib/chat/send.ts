@@ -17,7 +17,6 @@ export const send = async (options: Omit<ChatOptionsType, 'connectedUser'>) => {
     receiverAddress,
     account,
     pgpPrivateKey = null,
-    apiKey = '',
     env = Constants.ENV.PROD,
   } = options || {};
 
@@ -42,7 +41,6 @@ export const send = async (options: Omit<ChatOptionsType, 'connectedUser'>) => {
         messageType: 'Text',
         receiverAddress,
         connectedUser,
-        apiKey,
         env,
       });
     } else {
