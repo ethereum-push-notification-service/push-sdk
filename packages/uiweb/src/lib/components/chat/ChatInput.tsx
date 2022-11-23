@@ -12,7 +12,7 @@ export const ChatInput: React.FC = () => {
   const [showEmojis, setShowEmojis] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [filesUploading, setFileUploading] = useState<boolean>(false);
-  const { account, env, supportAddress, apiKey } =
+  const { account, env, receiverAddress, apiKey } =
     useContext<any>(ChatPropsContext);
 
   const {
@@ -39,7 +39,7 @@ export const ChatInput: React.FC = () => {
       const sendResponse = await PushAPI.chat.send({
         messageContent: message,
         messageType: 'Text',
-        receiverAddress: supportAddress,
+        receiverAddress: receiverAddress,
         account: account,
         pgpPrivateKey: connectedUser?.privateKey,
         apiKey,

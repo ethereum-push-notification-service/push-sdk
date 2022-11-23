@@ -10,7 +10,7 @@ import './index.css';
 
 export type ChatProps = {
   account: string;
-  supportAddress: string;
+  receiverAddress: string;
   // greetingMsg?: string;
   modalTitle?: string;
   primaryColor?: string;
@@ -24,7 +24,7 @@ export type ButtonStyleProps = {
 
 export const Chat: React.FC<ChatProps> = ({
   account,
-  supportAddress,
+  receiverAddress,
   // greetingMsg = Constants.DEFAULT_GREETING_MSG,
   modalTitle = Constants.DEFAULT_TITLE,
   primaryColor = Constants.COLOR.PRIMARY,
@@ -47,7 +47,7 @@ export const Chat: React.FC<ChatProps> = ({
 
   const chatPropsData = {
     account,
-    supportAddress,
+    receiverAddress,
     // greetingMsg,
     modalTitle,
     primaryColor,
@@ -58,7 +58,7 @@ export const Chat: React.FC<ChatProps> = ({
   useEffect(() => {
     setChats([]);
     setConnectedUser(null);
-  }, [account, supportAddress]);
+  }, [account, receiverAddress]);
 
   const chatMainStateData = {
     isModalOpen,

@@ -12,7 +12,7 @@ type HandleOnChatIconClickProps = {
 
 type GetChatsType = {
   pgpPrivateKey: string;
-  supportAddress: string;
+  receiverAddress: string;
 } & AccountEnvOptionsType;
 export const handleOnChatIconClick = ({
   isModalOpen,
@@ -83,12 +83,12 @@ export const getChats = async (
   const {
     account,
     pgpPrivateKey,
-    supportAddress,
+    receiverAddress,
     env = Constants.ENV.PROD,
   } = options || {};
   const threadhash: any = await PushAPI.chat.conversationHash({
     account: account,
-    conversationId: supportAddress,
+    conversationId: receiverAddress,
     env,
   });
   if (threadhash.threadHash) {

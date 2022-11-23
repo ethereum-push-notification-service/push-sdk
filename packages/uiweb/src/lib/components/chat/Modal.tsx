@@ -14,7 +14,7 @@ import {
 import { IMessageIPFS } from '@pushprotocol/restapi';
 
 export const Modal: React.FC = () => {
-  const { supportAddress, env, account } = useContext<any>(ChatPropsContext);
+  const { receiverAddress, env, account } = useContext<any>(ChatPropsContext);
   const { chats, setChatsSorted, connectedUser, setConnectedUser } =
     useContext<any>(ChatMainStateContext);
 
@@ -23,7 +23,7 @@ export const Modal: React.FC = () => {
     const chatsResponse = await getChats({
       account,
       pgpPrivateKey: connectedUser.privateKey,
-      supportAddress,
+      receiverAddress,
       env,
     });
     setChatsSorted(chatsResponse);

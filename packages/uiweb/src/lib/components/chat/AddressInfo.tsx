@@ -6,10 +6,10 @@ import Constants from './constants';
 import { pCAIP10ToWallet } from '../../helpers';
 
 export const AddressInfo: React.FC = () => {
-  const { supportAddress, env } = useContext<any>(ChatPropsContext);
+  const { receiverAddress, env } = useContext<any>(ChatPropsContext);
   const [ensName, setEnsName] = useState<string>('');
   const [user, setUser] = useState<any>({});
-  const walletAddress = pCAIP10ToWallet(supportAddress);
+  const walletAddress = pCAIP10ToWallet(receiverAddress);
 
   useEffect(() => {
     const getUser = async () => {
@@ -17,7 +17,7 @@ export const AddressInfo: React.FC = () => {
       setUser(user);
     };
     getUser();
-  }, [supportAddress]);
+  }, [receiverAddress]);
 
   return (
     <Container>
