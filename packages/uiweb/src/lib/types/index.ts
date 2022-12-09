@@ -1,3 +1,5 @@
+import React, { SVGProps } from "react";
+
 export interface IMessageIPFS {
   fromCAIP10: string;
   toCAIP10: string;
@@ -11,6 +13,7 @@ export interface IMessageIPFS {
   timestamp?: number;
   encType: string;
   encryptedSecret: string;
+  icon?: React.FC<SVGProps<SVGSVGElement>>;
 }
 
 
@@ -19,3 +22,14 @@ export interface AccountEnvOptionsType {
   account: string;
 }
 
+export interface ITheme {
+  bgColorPrimary?: string,
+  bgColorSecondary?: string,
+  textColorPrimary?: string,
+  textColorSecondary?: string,
+  btnColorPrimary?: string,
+  btnColorSecondary?: string
+  border?:string,
+  borderRadius?:string,
+  moduleColor?:string,
+}

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
+import { ChatMainStateContext, ChatPropsContext } from '../../context';
 import { IMessageIPFS } from '../../types';
 
 type ChatsPropType = {
@@ -25,6 +26,8 @@ export const Chats: React.FC<ChatsPropType> = ({
   caip10,
   messageBeingSent,
 }) => {
+  const { theme } = useContext<any>(ChatPropsContext);
+  const { connectedUser } = useContext<any>(ChatMainStateContext);
   const [showImageModal, setShowImageModal] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
   const time: Date = new Date(msg.timestamp!);
@@ -37,16 +40,17 @@ export const Chats: React.FC<ChatsPropType> = ({
           <>
             {msg.fromCAIP10 === caip10 ? (
               <MessageWrapper align="row-reverse">
-                <SenderMessage>
+                <SenderMessage theme={theme}>
                   <TextMessage>{msg.messageContent}</TextMessage>
-                  <TimeStamp>{date}</TimeStamp>
+                  {msg.timestamp !== undefined && <TimeStamp>{date}</TimeStamp>}
                 </SenderMessage>
               </MessageWrapper>
             ) : (
               <MessageWrapper align="row">
-                <ReceivedMessage>
+                <ReceivedMessage theme={theme}>
+                  {msg?.icon && <msg.icon fill={theme.btnColorPrimary} />}
                   <TextMessage>{msg.messageContent}</TextMessage>
-                  <TimeStamp>{date}</TimeStamp>
+                  {msg.timestamp !== undefined && <TimeStamp>{date}</TimeStamp>}
                 </ReceivedMessage>
               </MessageWrapper>
             )}
@@ -132,23 +136,11 @@ export const Chats: React.FC<ChatsPropType> = ({
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  background: #ffffff;
 `;
 
 const Button = styled.button``;
 
-const Image = styled.img``;
 const FileMessage = styled.div`
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const ImageMessage = styled.img`
-  max-height: 170px;
-  max-width: 300px;
-  object-fit: contain;
-  border-radius: '0px';
   &:hover {
     cursor: pointer;
   }
@@ -156,7 +148,7 @@ const ImageMessage = styled.img`
 
 const TextMessage = styled.p`
   word-wrap: break-word;
-  padding: 0 30px 7px 0;
+  padding: 0 45px 6px 4px;
   text-align: left;
   font-weight: 400;
   font-size: 15px;
@@ -190,15 +182,15 @@ const ReceivedMessage = styled.div`
   box-sizing: border-box;
   position: relative;
   max-width: 250px;
-  padding: ${(props: any): string => props.padding || '12px 15px 12px 20px'};
-  background: ${(props: any): string => props.color || '#ffffff'};
+  padding: ${(props: any): string => props.padding || '12px 15px 12px 11px'};
+  background: ${(props: any): string => props.theme.bgColorPrimary || '#ffffff'};
   text-align: left;
-  border: 1px solid #e4e8ef;
+  border: ${(props) => props.theme.border};
   border-radius: 2px 16px 16px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #000000;
+  color: ${(props: any): string => props.theme.textColorPrimary || '#000'};
 `;
 
 const SenderMessage = styled.div`
@@ -206,12 +198,12 @@ const SenderMessage = styled.div`
   position: relative;
   max-width: 250px;
   text-align: left;
-  padding: ${(props: any): string => props.padding || '12px 15px 12px 20px'};
-  background: ${(props: any): string => props.color || '#ca599b'};
-  border: 1px solid #e4e8ef;
+  padding: ${(props: any): string => props.padding || '12px 15px 12px 11px'};
+  background: ${(props: any): string => props.theme.bgColorSecondary || '#ca599b'};
+  border: ${(props) => props.theme.border};
   border-radius: 16px 2px 16px 16px;
   display: flex;
   justify-content: flex-strt;
   align-items: center;
-  color: #ffffff;
+  color: ${(props: any): string => props.theme.textColorSecondary || '#ffffff'};
 `;

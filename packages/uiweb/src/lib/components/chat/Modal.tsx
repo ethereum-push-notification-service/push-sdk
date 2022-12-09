@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ChatInput } from './ChatInput';
 import { ModalHeader } from './ModalHeader';
 import { AddressInfo } from './AddressInfo';
 import PoweredByPushLogo from '../../icons/chat/sponsorPush.svg';
+import { ReactComponent as HandWave } from '../../icons/chat/handWave.svg';
 import { ChatMainStateContext, ChatPropsContext } from '../../context';
 import { Chats } from './Chats';
 import {
@@ -11,65 +12,132 @@ import {
   getChats,
   walletToPCAIP10,
 } from '../../helpers';
-import { IMessageIPFS } from '@pushprotocol/restapi';
+import { IMessageIPFS } from '../../types';
+import { useChatScroll } from '../../hooks';
+import { Spinner } from './Spinner';
+import { Toaster } from './Toaster';
+
+const chatsFetchedLimit = 10;
 
 export const Modal: React.FC = () => {
-  const { supportAddress, env, account } = useContext<any>(ChatPropsContext);
-  const { chats, setChatsSorted, connectedUser, setConnectedUser } =
-    useContext<any>(ChatMainStateContext);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [lastThreadHashFetched, setLastThreadHashFetched] = useState<
+    string | null
+  >(null);
+  const [wasLastListPresent, setWasLastListPresent] = useState<boolean>(false);
+  const { supportAddress, env, account, greetingMsg, theme } =
+    useContext<any>(ChatPropsContext);
+  const {
+    chats,
+    setChatsSorted,
+    connectedUser,
+    setConnectedUser,
+    toastMessage,
+    toastType,
+    setToastMessage,
+    setToastType,
+  } = useContext<any>(ChatMainStateContext);
+  const listInnerRef = useChatScroll(chats.length);
+
+  const greetingMsgObject = {
+    fromDID: walletToPCAIP10(supportAddress),
+    toDID: walletToPCAIP10(account),
+    fromCAIP10: walletToPCAIP10(supportAddress),
+    toCAIP10: walletToPCAIP10(account),
+    messageContent: greetingMsg,
+    messageType: 'Text',
+    signature: '',
+    encType: '',
+    encryptedSecret: '',
+    sigType: '',
+    link: null,
+    timestamp: undefined,
+    icon: HandWave,
+  };
+  const onScroll = () => {
+    if (listInnerRef.current) {
+      const { scrollTop } = listInnerRef.current;
+      if (scrollTop === 0) {
+        // This will be triggered after hitting the first element.
+        // pagination
+        getChatCall();
+      }
+    }
+  };
 
   const getChatCall = async () => {
     if (!connectedUser) return;
-    const chatsResponse = await getChats({
+    if (wasLastListPresent && !lastThreadHashFetched) return;
+    setLoading(true);
+    const { chatsResponse, lastThreadHash, lastListPresent } = await getChats({
       account,
       pgpPrivateKey: connectedUser.privateKey,
       supportAddress,
+      threadHash: lastThreadHashFetched!,
+      limit: chatsFetchedLimit,
       env,
     });
-    setChatsSorted(chatsResponse);
+    setChatsSorted([...chats, ...chatsResponse]);
+    setLastThreadHashFetched(lastThreadHash);
+    setWasLastListPresent(lastListPresent);
+    setLoading(false);
   };
 
   const connectUser = async () => {
-    const user = await createUserIfNecessary({ account, env });
-    setConnectedUser(user);
+    setLoading(true);
+    try {
+      const user = await createUserIfNecessary({ account, env });
+      setConnectedUser(user);
+      setLoading(false);
+    } catch (err) {
+      setToastMessage(err);
+      setToastType('error');
+      setLoading(false);
+    }
   };
-
 
   useEffect(() => {
     getChatCall();
   }, [connectedUser]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      getChatCall();
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [connectedUser]);
-
   return (
-    <Container>
+    <Container theme={theme}>
       <HeaderSection>
         <ModalHeader />
         <AddressInfo />
       </HeaderSection>
-      <ChatSection>
-        {connectedUser && chats.length
-          ? chats.map((chat: IMessageIPFS) => (
-              <Chats
-                msg={chat}
-                caip10={walletToPCAIP10(account)}
-                messageBeingSent={true}
-              />
-            ))
-          : <></>}
-      </ChatSection>
       {!connectedUser && (
+        <Chats
+          msg={greetingMsgObject}
+          caip10={walletToPCAIP10(account)}
+          messageBeingSent={true}
+        />
+      )}
+      {loading && <Spinner size="40" />}
+      <ChatSection ref={listInnerRef} onScroll={onScroll} theme={theme}>
+        {connectedUser && chats.length ? (
+          chats.map((chat: IMessageIPFS, index: number) => (
+            <Chats
+              msg={chat}
+              key={index}
+              caip10={walletToPCAIP10(account)}
+              messageBeingSent={true}
+            />
+          ))
+        ) : (
+          <></>
+        )}
+      </ChatSection>
+      {!connectedUser && !loading && (
         <ConnectSection>
-          <Button onClick={() => connectUser()}>Connect</Button>
-          <Span>Connect your wallet to conitnue</Span>
+          <Button onClick={() => connectUser()} theme={theme}>
+            Connect
+          </Button>
+          <Span>Connect your wallet to continue</Span>
         </ConnectSection>
       )}
+      {toastMessage && <Toaster message={toastMessage} type={toastType}/>}
+
       <InputSection>
         {connectedUser && <ChatInput />}
         <Image
@@ -89,10 +157,10 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
-  background: #ffffff;
-  border: 1px solid #e4e8ef;
+  background: ${(props) => props.theme.moduleColor};
+  border: ${(props) => props.theme.border};
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.07);
-  border-radius: 24px;
+  border-radius: ${(props) => props.theme.borderRadius};
   height: 585px;
   max-height: 585px;
   width: 350px;
@@ -103,15 +171,33 @@ const Container = styled.div`
 const ChatSection = styled.div`
   height: 350px;
   overflow: auto;
+  padding: 0 5px;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    border-radius: 20px;
+    margin: 0 0 0 4px;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: ${(props: any): string => props.theme.bgColorSecondary};
+    border-radius: 20px;
+  }
 `;
 const ConnectSection = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 25%;
+  margin-bottom: 30%;
 `;
 
 const Button = styled.button`
-  background: #d53a94;
+  background: ${(props) => props.theme.btnColorPrimary};
   border-radius: 15px;
   align-self: center;
   padding: 11px 36px;
@@ -123,7 +209,7 @@ const Button = styled.button`
   align-items: center;
   text-align: center;
   letter-spacing: -0.019em;
-  color: #ffffff;
+  color: ${(props) => props.theme.textColorSecondary};
   margin-bottom: 10px;
   cursor: pointer;
 `;
@@ -155,17 +241,4 @@ const Span = styled.span`
   justify-content: center;
   margin-bottom: 30%;
   color: #657795;
-`;
-
-const PoweredByDiv = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const PoweredBySpan = styled.span`
-  font-weight: 500;
-  font-size: 8px;
-  line-height: 150%;
-  letter-spacing: 0.2em;
-  color: #494d5f;
 `;

@@ -1,9 +1,9 @@
 import { ethers } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
 import * as PushAPI from '@pushprotocol/restapi';
-import Constants from '../components/chat/constants';
-import { AccountEnvOptionsType } from '../types';
-import { IConnectedUser, IMessageIPFS } from '@pushprotocol/restapi';
+import {Constants} from '../config';
+import { AccountEnvOptionsType, IMessageIPFS } from '../types';
+import { IConnectedUser } from '@pushprotocol/restapi';
 
 type HandleOnChatIconClickProps = {
   isModalOpen: boolean;
@@ -13,6 +13,8 @@ type HandleOnChatIconClickProps = {
 type GetChatsType = {
   pgpPrivateKey: string;
   supportAddress: string;
+  limit: number;
+  threadHash?: string;
 } & AccountEnvOptionsType;
 export const handleOnChatIconClick = ({
   isModalOpen,
@@ -77,31 +79,59 @@ export const createUserIfNecessary = async (
   return { ...connectedUser, privateKey: decryptedPrivateKey };
 };
 
+type GetChatsResponseType = {
+  chatsResponse: IMessageIPFS[],
+  lastThreadHash: string | null,
+  lastListPresent: boolean
+}
+
 export const getChats = async (
   options: GetChatsType
-): Promise<IMessageIPFS[]> => {
+): Promise<GetChatsResponseType> => {
   const {
     account,
     pgpPrivateKey,
     supportAddress,
+    threadHash = null,
+    limit = 40,
     env = Constants.ENV.PROD,
   } = options || {};
-  const threadhash: any = await PushAPI.chat.conversationHash({
-    account: account,
-    conversationId: supportAddress,
-    env,
-  });
-  if (threadhash.threadHash) {
+  let threadhash: any = threadHash;
+  if (!threadhash) {
+    threadhash = await PushAPI.chat.conversationHash({
+      account: account,
+      conversationId: supportAddress,
+      env,
+    });
+    threadhash = threadhash.threadHash;
+  }
+  if (threadhash) {
     const chats = await PushAPI.chat.history({
       account: account,
       pgpPrivateKey: pgpPrivateKey,
-      threadhash: threadhash.threadHash,
-      limit: 30,
+      threadhash: threadhash,
+      limit: limit,
       env,
     });
 
-    console.log(chats);
-    return chats;
+    const lastThreadHash = chats[chats.length - 1]?.link;
+    const lastListPresent = chats.length > 0 ? true : false;
+    console.log({ chats, lastThreadHash });
+    return { chatsResponse: chats, lastThreadHash, lastListPresent };
   }
-  return [];
+  return { chatsResponse: [], lastThreadHash: null, lastListPresent: false };
+};
+
+
+export const copyToClipboard = (address:string):void => {
+  if (navigator && navigator.clipboard) {
+    navigator.clipboard.writeText(address);
+  } else {
+    const el = document.createElement("textarea");
+    el.value = address;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+  }
 };
