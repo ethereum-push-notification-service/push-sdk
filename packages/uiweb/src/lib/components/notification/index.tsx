@@ -11,6 +11,8 @@ import ActionButton from './styled/ActionButton';
 import { useDecrypt, DecryptButton } from './decrypt';
 import chainDetails from './chainDetails';
 
+import LinkSVG from "../../icons/link.svg";
+
 // ================= Define types
 export type chainNameType = "ETH_TEST_GOERLI" | "POLYGON_TEST_MUMBAI" | "ETH_MAINNET" | "POLYGON_MAINNET" | "THE_GRAPH" | undefined;
 
@@ -34,8 +36,11 @@ export type NotificationItemProps = {
 
 
 type ContainerDataType = {
-  cta?: boolean;
   timestamp?: string;
+};
+
+type CTADataType = {
+  cta?: boolean;
 };
 
 type MetaDataType = {
@@ -71,6 +76,9 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     isSecretRevealed,
   } = useDecrypt({ notificationTitle, parsedBody, cta, image }, isSecret);
 
+  const isCtaURLValid = MediaHelper.validURL(notifCta);
+  const isChannelURLValid = MediaHelper.validURL(url);
+
   // store the image to be displayed in this state variable
   const [imageOverlay, setImageOverlay] = React.useState("");
   const [subscribeLoading, setSubscribeLoading] = React.useState(false);
@@ -84,13 +92,13 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   // })
   const gotToCTA = (e: React.SyntheticEvent<HTMLElement>) => {
     e.stopPropagation();
-    if (!MediaHelper.validURL(notifCta)) return;
+    if (!isCtaURLValid) return;
     window.open(notifCta, "_blank");
   };
 
   const goToURL = (e: React.SyntheticEvent<HTMLElement>) => {
     e.stopPropagation();
-    if (!MediaHelper.validURL(url)) return;
+    if (!isChannelURLValid) return;
     window.open(url, "_blank");
   };
 
@@ -141,24 +149,20 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <Container
       timestamp={timeStamp}
-      cta={MediaHelper.validURL(notifCta)}
-      onClick={gotToCTA}
       theme={theme}
     >
       {/* header that only pops up on small devices */}
-      <MobileHeader onClick={goToURL} theme={theme}>
+      <MobileHeader theme={theme}>
         <HeaderButton theme={theme}>
           <ImageContainer theme={theme}>
             <IPFSIcon icon={icon} />
           </ImageContainer>
-          {app}
+          <ChannelName onClick={goToURL}>
+            {app}
+          </ChannelName>
         </HeaderButton>
         {chainName && chainDetails[chainName] ? (
           <BlockchainContainer>
-            <NetworkDetails theme={theme}>
-              <DelieveredViaText>DELIVERED VIA</DelieveredViaText>
-              <NetworkName>{chainDetails[chainName].label}</NetworkName>
-            </NetworkDetails>
             <ChainIconSVG>{chainDetails[chainName].icon}</ChainIconSVG>
           </BlockchainContainer>
         ) : null}
@@ -166,7 +170,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       {/* header that only pops up on small devices */}
 
       {/* content of the component */}
-      <ContentSection>
+      <ContentSection onClick={isCtaURLValid ? gotToCTA : undefined} theme={theme} cta={isCtaURLValid}>
         {/* section for media content */}
         {notifImage &&
           // if its an image then render this
@@ -203,11 +207,24 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
         {/* section for text content */}
         <ChannelDetailsWrapper>
-          <ChannelTitle>
-            <ChannelTitleLink theme={theme}>{notifTitle}</ChannelTitleLink>
+          <ChannelTitle 
+            cta={isCtaURLValid}
+            theme={theme}
+          >
+            <ChannelTitleText>
+              {notifTitle}
+            </ChannelTitleText>
+            {/* display link svg if notification has a valid cta url */}
+            {
+              isCtaURLValid
+              ?
+                <img src={LinkSVG} alt="CTA link" style={{height: "20px", marginLeft: "7px"}} />
+              :
+                ""
+            }
           </ChannelTitle>
           <ChannelDesc>
-            <ChannelDescLabel theme={theme}>
+            <ChannelDescLabel cta={isCtaURLValid} theme={theme}>
               <ParseMarkdownText text={notifBody} />
             </ChannelDescLabel>
           </ChannelDesc>
@@ -294,14 +311,15 @@ NotificationItem.defaultProps = {
 const MD_BREAKPOINT = "50050px"; //set an arbitrarily large number because we no longer use this breakpoint
 const SM_BREAKPOINT = "900px";
 
-const GUTTER_SPACE = {
-  LARGE: '8px',
-  SMALL: '8px'
-};
-
-const ContentSection = styled.div`
+const ContentSection = styled.div<CTADataType>`
   display: flex;
-  padding: 12px;
+  padding: 15px 16px;
+
+  cursor: ${(props) => (props.cta ? "pointer" : "default")};
+
+  &:hover{
+    background: ${(props) => (props.cta ? (props.theme === "light" ? "#e8eaf680" : "#404650") : "none")};
+  }
   
   @media (min-width: ${SM_BREAKPOINT}) {
     align-items: flex-start;
@@ -320,36 +338,10 @@ const BlockchainContainer = styled.div`
   justify-content: center;
   font-weight: 700;
 `;
-const NetworkDetails = styled.div`
-  text-align: right;
-  padding-right: 8px;
-  color: ${(props) => props.theme === "light" ? "#000000" : "#FFFFFF"};
-  @media (max-width: ${SM_BREAKPOINT}) {
-    display: none;
-  }
-`;
-const DelieveredViaText = styled.div`
-  font-size: 10px;
-  line-height: 10px;
-  opacity: 30%;
-  @media (max-width: ${SM_BREAKPOINT}) {
-    font-size: 10px;
-    line-height: 10px;
-  }
-`;
-const NetworkName = styled.div`
-  font-size: 10px;
-  line-height: 10px;
-  opacity: 50%;
-  @media (max-width: ${SM_BREAKPOINT}) {
-    font-size: 8px;
-    line-height: 8px;
-  }
-`;
 
 const ChainIconSVG = styled.div`
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
 
   svg, svg image, img {
     width: 100%;
@@ -418,20 +410,17 @@ const ChannelDetailsWrapper = styled.div`
 const Container = styled.div<ContainerDataType>`
   position: relative;
   overflow: hidden;
-  font-family: "Source Sans Pro", Arial, sans-serif;
+  font-family: Strawford, sans-serif;
   flex: 1;
   display: flex;
   flex-wrap: wrap;
   border: ${(props) =>
-    props.cta
-      ? "0.7px solid #35C5F3"
-      : props.theme === "light"
-      ? "1px solid rgba(231.0, 231.0, 231.0, 1);"
-      : "1px solid #444"};
-  cursor: ${(props) => (props.cta ? "pointer" : "")};
-  background: ${(props) => (props.theme === "light" ? "#fff" : "#000")};
+    props.theme === "light"
+      ? "1px solid #D9D9D9"
+      : "1px solid #4A4F67"};
+  background: ${(props) => (props.theme === "light" ? "#fff" : "#2F3137")};
   border-radius: 10px;
-  margin: 15px 0px;
+  margin: 1.8rem 0px;
   justify-content: center;
   justify-content: space-between;
   @media (max-width: ${MD_BREAKPOINT}) {
@@ -442,65 +431,71 @@ const Container = styled.div<ContainerDataType>`
 const MobileHeader = styled.div`
   display: none;
   @media (max-width: ${MD_BREAKPOINT}) {
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: ${GUTTER_SPACE.LARGE};
-    font-size: 14px;
-    border-bottom: ${(props) => props.theme === "light" ? "1px solid #ededed" : "1px solid #444"};
-    background: ${(props) => (props.theme === "light" ? "#fafafa" : "#222")};
+    padding: 12px 10px;
+    border-bottom: ${(props) => props.theme === "light" ? "1px solid #D9D9D9" : "1px solid #4A4F67"};
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     text-align: left;
   }
-  @media (max-width: ${SM_BREAKPOINT}) {
-    padding: ${GUTTER_SPACE.SMALL};
-    font-size: 14px;
-  }
 `;
+
+const ChannelName = styled.div`
+  cursor: pointer;
+  &:hover{
+    text-decoration: underline;
+  }
+`
 
 const HeaderButton = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
-  color: ${(props) => (props.theme === "light" ? "#000000" : "#FFFFFF")};
+  color: ${(props) => (props.theme === "light" ? "#333333" : "#C5CAE9")};
 `;
 
-const ChannelTitle = styled.div`
+const ChannelTitle = styled.div<CTADataType>`
+  width: fit-content;
+  display: flex;
+  align-items: center;
   text-align: left;
   margin-bottom: 8px;
+  
+  &:hover{
+    text-decoration: ${(props) => (props.cta ? "underline" : "none")};
+  }
+  
+  @media (max-width: ${MD_BREAKPOINT}) {
+    color: ${(props) => (props.theme === "light" ? "#333333" : "#C5CAE9")};
+  }
+
   @media (max-width: ${SM_BREAKPOINT}) {
     margin-bottom: 6px;
   }
 `;
 
-const ChannelTitleLink = styled.a`
-  text-decoration: none;
-  color: #000;
-  font-size: 18px;
-  font-weight: 600;
-  @media (max-width: ${MD_BREAKPOINT}) {
-    font-weight: 300;
-    color: ${(props) =>
-      props.theme === "light" ? "#000000" : "#FFFFFF"};
-  }
-`;
+const ChannelTitleText = styled.div`
+  font-size: 22px;
+  font-weight: 400;
+`
 
 const ChannelDesc = styled.div`
   line-height: 20px;
   flex: 1;
   display: flex;
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(0, 0, 0, 0.75);
   font-weight: 400;
   flex-direction: column;
 `;
 
-const ChannelDescLabel = styled.label`
-  color: ${(props) => (props.theme === "light" ? "#000" : "#fff")};
+const ChannelDescLabel = styled.label<CTADataType>`
+  cursor: ${(props) => (props.cta ? "pointer" : "default")};
+  color: ${(props) => (props.theme === "light" ? "#333333" : "#C5CAE9")};
   flex: 1;
   margin: 0px;
   text-align: left;

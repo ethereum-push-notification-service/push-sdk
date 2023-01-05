@@ -33,7 +33,7 @@ const IPFSIcon: React.FC<IPFSIconType> = ({
 
     return (
         <img
-            style={{width: "100%"}}
+            style={{width: "100%", borderRadius: "8px"}}
             src={imageInBase64} alt=""
         />
     )
