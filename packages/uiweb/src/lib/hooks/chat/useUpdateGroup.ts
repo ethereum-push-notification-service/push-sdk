@@ -1,52 +1,56 @@
-import * as PushAPI from '@pushprotocol/restapi';
-import { Env } from '@pushprotocol/restapi';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useChatData } from './useChatData';
-import { IGroup } from '../../types';
+import { GroupRolesKeys } from '../../components/chat/types';
 
 
 interface updateGroupParams {
-  groupInfo:IGroup;
-  memberList:Array<string>;
-  adminList:Array<string>;
+  chatId:string;
+  role: GroupRolesKeys ;
+  memberList: Array<string>;
 }
 
 const useUpdateGroup = () => {
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { account, env,pgpPrivateKey } = useChatData();
+  const { account, env, pushUser } = useChatData();
 
 
-  const updateGroup = useCallback(
-    async ({groupInfo,memberList,adminList}: updateGroupParams) => {
+  const addMember = useCallback(
+    async ({ role, memberList,chatId  }: updateGroupParams) => {
       setLoading(true);
       try {
-        const updateResponse = await PushAPI.chat.updateGroup({
-            chatId: groupInfo?.chatId,
-            groupName: groupInfo?.groupName,
-            groupDescription: groupInfo?.groupDescription ?? '',
-            groupImage: groupInfo?.groupImage,
-            members: memberList,
-            admins: adminList,
-            account: account,
-            pgpPrivateKey: pgpPrivateKey,
-            env: env,
-          });
-        return updateResponse;
-      } catch (error: Error | any) {
-        setLoading(false);
+        const response = await pushUser?.chat.group.add(chatId, {
+          role: role,
+          accounts: memberList,
+        });
+        return response;
+      } catch(error: Error | any) {
+        console.log("err", error);
         setError(error.message);
-        console.log(error);
-        return;
-      }
-      finally {
-        setLoading(false);
+        return error.message;
       }
     },
-    [pgpPrivateKey,env,account]
-  );
+    [pushUser, env, account]
+  )
+  const removeMember = useCallback(
+    async ({ role, memberList,chatId  }: updateGroupParams) => {
+      setLoading(true);
+      try {
+        const response = await pushUser?.chat.group.remove(chatId, {
+          role: role,
+          accounts: memberList,
+        });
+        return response;
+      } catch(error: Error | any) {
+        console.log("err", error);
+        setError(error.message);
+        return error.message;
+      }
+    },
+    [pushUser, env, account]
+  )
 
-  return { updateGroup, error, loading };
+  return { error, loading, addMember,removeMember };
 };
 
 export default useUpdateGroup;

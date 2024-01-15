@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Section } from '../components/StyledComponents';
 import {  ChatViewList } from '@pushprotocol/uiweb';
 import { EnvContext, Web3Context } from '../context';
-import { usePushChatSocket } from '@pushprotocol/uiweb';
+import { usePushChatStream } from '@pushprotocol/uiweb';
 import { MessageInput } from '@pushprotocol/uiweb';
 
 

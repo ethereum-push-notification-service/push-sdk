@@ -51,7 +51,7 @@ export const ChatViewBubbles = () => {
     return (
         <div style={{ height: "350px", width: "500px" }}>
             {message.map((msg) => (
-                <ChatViewBubble chat={msg} />
+                <ChatViewBubble decryptedMessagePayload={msg} />
             ))}
         </div>
     )

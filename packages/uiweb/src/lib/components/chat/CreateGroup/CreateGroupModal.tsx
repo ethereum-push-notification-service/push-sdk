@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import { AiTwotoneCamera } from 'react-icons/ai';
-import { MdError } from 'react-icons/md';
+import { MdCheckCircle, MdError } from 'react-icons/md';
 
 import { ModalHeader } from '../reusables/Modal';
 import { Modal } from '../reusables/Modal';
@@ -12,23 +12,30 @@ import { TextArea } from '../reusables/TextArea';
 import { Section, Span } from '../../reusables';
 import { Button } from '../reusables';
 import { CreateGroupType, GROUP_TYPE_OPTIONS } from './CreateGroupType';
-import useToast from '../reusables/NewToast';
-import { CreateGroupModalProps, IChatTheme, MODAL_BACKGROUND_TYPE, MODAL_POSITION_TYPE } from '../exportedTypes';
 import useMediaQuery from '../../../hooks/useMediaQuery';
 import { DefineCondtion } from './DefineCondition';
 import AddCriteria from './AddCriteria';
-import { SpamIcon } from '../../../icons/SpamIcon';
 import { ThemeContext } from '../theme/ThemeProvider';
 import {
   CriteriaStateManagerType,
   useCriteriaStateManager,
 } from '../../../hooks/chat/useCriteriaState';
+import { AddGroupMembers } from './AddGroupMembers';
+import AutoImageClipper from './AutoImageClipper';
+import { useCreateGatedGroup } from '../../../hooks/chat/useCreateGatedGroup';
+import useToast from '../reusables/NewToast';
 
 import { Image } from '../../../config/styles';
 import { ProfilePicture, device } from '../../../config';
 import { CriteriaValidationErrorType } from '../types';
-import AutoImageClipper from './AutoImageClipper';
-import AddWalletsInCreateGroup from './AddWallets';
+import {
+  CreateGroupModalProps,
+  IChatTheme,
+  MODAL_BACKGROUND_TYPE,
+  MODAL_POSITION_TYPE,
+} from '../exportedTypes';
+
+
 
 export const CREATE_GROUP_STEP_KEYS = {
   INPUT_DETAILS: 1,
@@ -45,29 +52,30 @@ export interface GroupInputDetailsType {
   groupName: string;
   groupDescription: string;
   groupImage: string;
-  groupMembers: string[];
-  groupAdmins: string[];
+  groupMembers: any;
+  groupEncryptionType: string;
 }
 
 export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   onClose,
   modalBackground = MODAL_BACKGROUND_TYPE.OVERLAY,
-  modalPositionType = MODAL_POSITION_TYPE.GLOBAL
+  modalPositionType = MODAL_POSITION_TYPE.GLOBAL,
 }) => {
   const [activeComponent, setActiveComponent] = useState<CreateGroupStepKeys>(
     // replace it with info one
     CREATE_GROUP_STEP_KEYS.INPUT_DETAILS
   );
-
+  const { createGatedGroup, loading } = useCreateGatedGroup();
+  const groupInfoToast = useToast();
   const handleNext = () => {
     setActiveComponent((activeComponent + 1) as CreateGroupStepKeys);
   };
   const handleAddWallets = () => {
-    setActiveComponent((activeComponent + 3) as CreateGroupStepKeys)
-  }
+    setActiveComponent((activeComponent + 3) as CreateGroupStepKeys);
+  };
   const handlePreviousfromAddWallets = () => {
-    setActiveComponent((activeComponent - 3) as CreateGroupStepKeys)
-  }
+    setActiveComponent((activeComponent - 3) as CreateGroupStepKeys);
+  };
   const handlePrevious = () => {
     setActiveComponent((activeComponent - 1) as CreateGroupStepKeys);
   };
@@ -84,12 +92,8 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   }, [activeComponent]);
 
   const useDummyGroupInfo = false;
-  const [groupMembers, setGroupMembers] = useState<string[]>([]);
-  const [groupAdmins, setGroupAdmins] = useState<string[]>([]);
+
   const [checked, setChecked] = useState<boolean>(true);
-  const [groupEncryptionType, setGroupEncryptionType] = useState(
-    GROUP_TYPE_OPTIONS[0].value
-  );
   const [groupInputDetails, setGroupInputDetails] =
     useState<GroupInputDetailsType>({
       groupName: useDummyGroupInfo ? 'This is duumy group name' : '',
@@ -97,17 +101,67 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
         ? 'This is dummy group description for testing'
         : '',
       groupImage: useDummyGroupInfo ? ProfilePicture : '',
-      groupMembers: useDummyGroupInfo ? groupMembers : [],
-      groupAdmins: useDummyGroupInfo ? groupAdmins : [],
+      groupMembers: [],
+      groupEncryptionType: GROUP_TYPE_OPTIONS[0].value,
     });
   const [isImageUploaded, setIsImageUploaded] = useState<boolean>(false);
-  
-    useEffect(() => {
-      setGroupInputDetails({
-        ...groupInputDetails,
-        groupMembers: groupMembers,
+
+
+  const showError = (errorMessage: string) => {
+    groupInfoToast.showMessageToast({
+      toastTitle: 'Error',
+      toastMessage: errorMessage,
+      toastType: 'ERROR',
+      getToastIcon: (size) => <MdError size={size} color="red" />,
+    });
+  };
+
+  const getEncryptionType = () => {
+    console.debug(groupInputDetails.groupEncryptionType, "encryptionTypeee");
+    if (groupInputDetails.groupEncryptionType === 'encrypted') {
+      return false;
+    }
+    return true;
+  };
+
+  const createGroupService = async () => {
+    const groupInfo = {
+      groupName: groupInputDetails.groupName,
+      groupDescription: groupInputDetails.groupDescription,
+      groupImage: groupInputDetails.groupImage || ProfilePicture,
+      isPublic: getEncryptionType(),
+      members: groupInputDetails.groupMembers
+        .filter((member: any) => !member.isAdmin)
+        .map((member: any) => member.wallets),
+      admins: groupInputDetails.groupMembers
+        .filter((member: any) => member.isAdmin)
+        .map((member: any) => member.wallets),
+    };
+    const rules: any = checked ? criteriaStateManager.generateRule() : {};
+    const isSuccess = await createGatedGroup(groupInfo, rules);
+    if (isSuccess === true) {
+      groupInfoToast.showMessageToast({
+        toastTitle: 'Success',
+        toastMessage: 'Group created successfully',
+        toastType: 'SUCCESS',
+        getToastIcon: (size: string | number | undefined) => (
+          <MdCheckCircle size={size} color="green" />
+        ),
       });
-    }, [groupMembers])
+      onClose();
+    } else {
+      showError('Group creation failed');
+    }
+  };
+
+  const verifyAndCreateGroup = async () => {
+    if (groupInputDetails.groupEncryptionType.trim() === '') {
+      showError('Group encryption type is not selected');
+      return;
+    }
+
+    await createGroupService();
+  };
 
   const renderComponent = () => {
     switch (activeComponent) {
@@ -128,12 +182,11 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
       case CREATE_GROUP_STEP_KEYS.GROUP_TYPE:
         return (
           <CreateGroupType
-          groupEncryptionType={groupEncryptionType}
-          setGroupEncryptionType={setGroupEncryptionType}
-          checked={checked}
-          setChecked={setChecked}
+            checked={checked}
+            setChecked={setChecked}
             criteriaStateManager={criteriaStateManager}
             groupInputDetails={groupInputDetails}
+            setGroupInputDetails={setGroupInputDetails}
             handleNext={handleNext}
             onClose={onClose}
             handlePrevious={handlePrevious}
@@ -157,10 +210,23 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
             onClose={onClose}
           />
         );
+        
       case CREATE_GROUP_STEP_KEYS.ADD_MEMBERS:
         return (
-          <AddWalletsInCreateGroup handlePrevious={handlePreviousfromAddWallets} onClose={onClose} groupEncryptionType={groupEncryptionType} checked={checked} groupAdmins={groupAdmins} criteriaStateManager={criteriaStateManager} groupInputDetails={groupInputDetails} setGroupInputDetails={setGroupInputDetails} groupMembers={groupMembers} setGroupMembers={setGroupMembers} />
-        )
+          <AddGroupMembers
+            onSubmit={verifyAndCreateGroup}
+            onClose={onClose}
+            handlePrevious={handlePreviousfromAddWallets}
+            memberList={groupInputDetails.groupMembers}
+            handleMemberList={(members: any)=>{
+              setGroupInputDetails(
+              (prev: GroupInputDetailsType) => ({ ...prev, groupMembers: members})
+            )}}
+            isLoading={loading}
+            isPublic={getEncryptionType()}
+          />
+         
+        );
       default:
         return (
           <CreateGroupDetail
@@ -177,7 +243,11 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   };
 
   return (
-    <Modal clickawayClose={onClose} modalBackground={modalBackground} modalPositionType={modalPositionType}>
+    <Modal
+      clickawayClose={onClose}
+      modalBackground={modalBackground}
+      modalPositionType={modalPositionType}
+    >
       {renderComponent()} <ToastContainer />
     </Modal>
   );
@@ -190,11 +260,11 @@ export interface ModalHeaderProps {
   criteriaStateManager: CriteriaStateManagerType;
   checked?: boolean;
   setChecked?: React.Dispatch<React.SetStateAction<boolean>>;
-  groupEncryptionType?: string;
-  setGroupEncryptionType?: React.Dispatch<React.SetStateAction<string>>;
   handleAddWallets?: () => void;
   isImageUploaded?: boolean;
   setIsImageUploaded?: React.Dispatch<React.SetStateAction<boolean>>;
+  setGroupInputDetails?: React.Dispatch<React.SetStateAction<GroupInputDetailsType>>;
+  groupInputDetails?: GroupInputDetailsType;
 }
 
 interface GroupDetailState {
@@ -237,23 +307,15 @@ const CreateGroupDetail = ({
       setIsImageUploaded
     ) {
       setIsImageUploaded(true);
-      setGroupInputDetails({
-        groupDescription,
-        groupName,
+      setGroupInputDetails((prev: GroupInputDetailsType) => ({
+        ...prev,
         groupImage: '',
-        groupMembers: [],
-        groupAdmins: [],
-      });
+      }));
       const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
 
       reader.onloadend = function () {
         setImageSrc(reader.result as string);
-        // setGroupInputDetails({
-        //   groupDescription,
-        //   groupName,
-        //   groupImage: reader.result as string,
-        // });
       };
     }
   };
@@ -295,8 +357,8 @@ const CreateGroupDetail = ({
       flexDirection="column"
       alignItems="center"
       gap="16px"
-      overflow='hidden auto'
-       justifyContent='start'
+      overflow="hidden auto"
+      justifyContent="start"
       width={!isMobile ? '400px' : '300px'}
     >
       <ModalHeader title="Create Group" handleClose={onClose} />
@@ -317,13 +379,10 @@ const CreateGroupDetail = ({
             <AutoImageClipper
               imageSrc={imageSrc}
               onImageCropped={(croppedImage: string) =>
-                setGroupInputDetails({
-                  groupDescription,
-                  groupName,
+                setGroupInputDetails((prev: GroupInputDetailsType) => ({
+                  ...prev,
                   groupImage: croppedImage,
-                  groupMembers: [],
-                  groupAdmins: [],
-                })
+                }))
               }
               width={undefined}
               height={undefined}
@@ -334,7 +393,6 @@ const CreateGroupDetail = ({
             <AiTwotoneCamera fontSize={40} color={'rgba(87, 93, 115, 1)'} />
           </ImageContainer>
         )}
-      
         <FileInput
           type="file"
           accept="image/*"
@@ -349,13 +407,10 @@ const CreateGroupDetail = ({
           charCount={30}
           inputValue={groupName}
           onInputChange={(e: any) =>
-            setGroupInputDetails({
-              groupDescription,
+            setGroupInputDetails((prev: GroupInputDetailsType) => ({
+              ...prev,
               groupName: e.target.value,
-              groupImage,
-              groupMembers: [],
-              groupAdmins: [],
-            })
+            }))
           }
           error={!!validationErrors?.groupName}
         />
@@ -369,13 +424,10 @@ const CreateGroupDetail = ({
           charCount={80}
           inputValue={groupDescription}
           onInputChange={(e: any) =>
-            setGroupInputDetails({
+            setGroupInputDetails((prev: GroupInputDetailsType) => ({
+              ...prev,
               groupDescription: e.target.value,
-              groupName,
-              groupImage,
-              groupMembers: [],
-              groupAdmins: [],
-            })
+            }))
           }
           error={!!validationErrors?.groupDescription}
         />
@@ -390,12 +442,11 @@ const CreateGroupDetail = ({
   );
 };
 
-
 //use the theme
 const UploadContainer = styled.div`
   width: fit-content;
-  min-width:128px;
-  min-height:128px;
+  min-width: 128px;
+  min-height: 128px;
   cursor: pointer;
   align-self: center;
 `;
@@ -409,9 +460,9 @@ const ImageContainer = styled.div<{ theme: IChatTheme }>`
   cursor: pointer;
   height: 128px;
   max-height: 128px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 const UpdatedImageContainer = styled.div`
   margin-top: 10px;

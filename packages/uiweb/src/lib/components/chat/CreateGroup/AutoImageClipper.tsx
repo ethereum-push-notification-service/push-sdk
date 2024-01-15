@@ -119,8 +119,7 @@ const AutoImageClipper = (props: { imageSrc: any; onImageCropped: any; width: an
         setZoom(zoom);
     };
     return (
-        <Fragment>
-            <Container>
+        <Container>
                 <Cropper
                     image={imageSrc}
                     crop={crop}
@@ -139,7 +138,6 @@ const AutoImageClipper = (props: { imageSrc: any; onImageCropped: any; width: an
                     }}
                 />
             </Container>
-        </Fragment>
     );
 };
 

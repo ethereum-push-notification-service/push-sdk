@@ -1,6 +1,5 @@
-import type { IMessageIPFS } from '@pushprotocol/restapi';
+import type { GroupDTO, GroupInfoDTO, IMessageIPFS } from '@pushprotocol/restapi';
 import { IChatTheme } from "./theme";
-import { IGroup } from '../../types'
 
 export interface IChatViewListProps {
   chatId: string;
@@ -30,7 +29,6 @@ export interface IChatViewComponentProps {
 
 export interface IChatProfile {
   chatId: string;
-  style: "Info" | "Preview";
   groupInfoModalBackground?: ModalBackgroundType;
   groupInfoModalPositionType?: ModalPositionType;
   component?: React.ReactNode;
@@ -71,57 +69,41 @@ export interface MessageInputProps {
   onVerificationFail?: () => void;
 }
 
+export type Group = GroupInfoDTO| GroupDTO | undefined;
 
+// export interface Feeds {
+//   chatId?: string;
+//   msg: IMessageIPFS;
+//   did: string;
+//   wallets: string;
+//   profilePicture: string | null;
+//   publicKey: string | null;
+//   about: string | null;
+//   threadhash: string | null;
+//   intent: string | null;
+//   intentSentBy: string | null;
+//   intentTimestamp: Date;
+//   combinedDID: string;
+//   cid?: string;
+//   groupInformation?: Group
+// }
 
-
-export interface MessageIPFS {
-  fromCAIP10: string
-  toCAIP10: string
-  fromDID: string
-  toDID: string
-  messageType: string
-  messageContent: string
-  signature: string
-  sigType: string
-  link: string | null
-  timestamp?: number
-  encType: string
-  encryptedSecret: string
-}
-
-export interface Feeds {
-  chatId?: string;
-  msg: MessageIPFS;
-  did: string;
-  wallets: string;
-  profilePicture: string | null;
-  publicKey: string | null;
-  about: string | null;
-  threadhash: string | null;
-  intent: string | null;
-  intentSentBy: string | null;
-  intentTimestamp: Date;
-  combinedDID: string;
-  cid?: string;
-  groupInformation?: IGroup
-}
-
-export interface User {
-  did: string;
-  wallets: string;
-  profilePicture: string | null;
-  publicKey: string;
-  encryptedPrivateKey: string;
-  encryptionType: string;
-  signature: string;
-  sigType: string;
-  about: string | null;
-  name: string | null;
-  numMsg: number;
-  allowedNumMsg: number;
-  linkedListHash?: string | null;
-  isAdmin?:boolean;
-}
+// export interface User {
+//   did: string;
+//   wallets: string;
+//   profilePicture: string | null;
+//   publicKey: string;
+//   encryptedPrivateKey: string;
+//   encryptionType: string;
+//   signature: string;
+//   sigType: string;
+//   about: string | null;
+//   name: string | null;
+//   numMsg: number;
+//   allowedNumMsg: number;
+//   linkedListHash?: string | null;
+//   isAdmin?:boolean;
+// }
 
 export const MODAL_BACKGROUND_TYPE = {
   OVERLAY:'OVERLAY',

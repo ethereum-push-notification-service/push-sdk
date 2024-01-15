@@ -5,7 +5,8 @@ import { ethers } from 'ethers';
 
 import { useAccount, useChatData } from '../../../hooks';
 import { ThemeContext } from '../theme/ThemeProvider';
-
+import useCreateChatProfile from '../../../hooks/useCreateChatProfile';
+import useDecryptPGPKey from '../../../hooks/useDecryptPGPKey';
 
 import { getAddressFromSigner } from '../../../helpers';
 import { IChatTheme } from '../theme';
@@ -18,15 +19,19 @@ import { device } from '../../../config';
 interface IThemeProps {
   theme?: IChatTheme;
 }
-
+interface IConnectButtonProps {
+  autoConnect?: boolean;
+}
 
 export const ConnectButtonSub = ({autoConnect = false})  => {
   const {wallet, connecting , connect, disconnect} = useAccount();
 
   const {
     signer,
+  
     setAccount,
     setSigner,
+    
   } = useChatData();
   const theme = useContext(ThemeContext);
 

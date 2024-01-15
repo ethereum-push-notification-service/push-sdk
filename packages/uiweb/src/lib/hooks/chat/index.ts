@@ -1,8 +1,7 @@
 export * from './useFetchHistoryMessages';
 export * from './useChatData';
-
+export * from './usePushChatStream';
 export * from './useChatProfile';
-export * from './usePushChatSocket';
 export * from './useFetchChat';
 export * from  './usePushSendMessage';
 export * from './useGetGroupByID';

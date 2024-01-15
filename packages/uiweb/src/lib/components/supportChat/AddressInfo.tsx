@@ -14,7 +14,7 @@ export const AddressInfo: React.FC = () => {
 
   useEffect(() => {
     const getUser = async () => {
-if(pushUser){
+      if (Object.keys(pushUser || {}).length) {
   const user = await pushUser.info();
       setUser(user);
 }

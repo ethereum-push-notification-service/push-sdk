@@ -13,3 +13,4 @@ export * from './QuantityInput';
 export * from './OptionButtons';
 export * from './Checkbox';
 export * from './InfoContainer';
+export * from './AddWallets';

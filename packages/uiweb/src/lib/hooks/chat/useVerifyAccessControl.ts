@@ -1,4 +1,3 @@
-import * as PushAPI from '@pushprotocol/restapi';
 import { useCallback, useState } from 'react';
 import { ENV } from '../../config';
 import { useChatData } from './useChatData';
@@ -16,22 +15,18 @@ const useVerifyAccessControl = () => {
     useState<boolean>(true);
   const [verified, setVerified] = useState<boolean>(false);
 
-  const { pgpPrivateKey, env, account } = useChatData();
+  const { env, account, pushUser } = useChatData();
 
   const verifyAccessControl = useCallback(
     async (options: VerifyAccessControlParams) => {
       const { chatId, did } = options || {};
       setLoading(true);
       try {
-        const response = await PushAPI.chat.getGroupAccess({
-          chatId: chatId,
-          did: `eip155:${did}`,
-          env: env,
-        });
+        const response = await pushUser?.chat.group.permissions(chatId);
         setLoading(false);
-        if (response.chat === false) {
+        if (response?.chat === false || response?.entry === false) {
           setVerificationSuccessfull(false);
-        } else if (response.chat === true) {
+        } else if (response?.chat === true) {
           setVerified(true);
           setAccessControl(chatId, false);
         }
@@ -47,7 +42,7 @@ const useVerifyAccessControl = () => {
         return;
       }
     },
-    [pgpPrivateKey, account, env]
+    [account, env, pushUser]
   );
 
   return {

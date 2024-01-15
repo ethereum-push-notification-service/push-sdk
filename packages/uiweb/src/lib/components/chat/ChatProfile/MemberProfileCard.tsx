@@ -13,8 +13,8 @@ import { Section, Span } from '../../reusables';
 import Dropdown from '../reusables/DropDown';
 import { pCAIP10ToWallet } from '../../../helpers';
 import { device } from '../../../config';
-import { IChatTheme } from '../theme';
 import { ProfileContainer } from '../reusables';
+import { isAdmin } from '../helpers';
 
 type MemberProfileCardProps = {
   key?: number | string;
@@ -50,21 +50,23 @@ export const MemberProfileCard = ({
   return (
     <ProfileCardItem
       background={
-        (member.wallet?.toLowerCase() === selectedMemberAddress?.toLowerCase()) ? theme.backgroundColor?.modalHoverBackground : ''
+        (member.address?.toLowerCase() === selectedMemberAddress?.toLowerCase()) ? 
+        theme.backgroundColor?.modalHoverBackground
+         : ''
       }
-      id={member.wallet}
+      id={member?.address}
       key={key}
       theme={theme}
     >
       <ProfileContainer
         theme={theme}
         member={{
-          wallet: shortenText(member?.wallet?.split(':')[1], 6, true),
-          image: member.image,
+          wallet: shortenText(pCAIP10ToWallet(member?.address), 6, true),
+          image: member?.userInfo?.profile?.picture,
         }}
       />
       <Section justifyContent="flex-end" position="relative" zIndex="2">
-        {member?.isAdmin && (
+        {isAdmin(member)&& (
           <Span
             background="#F4DCEA"
             color="#D53A94"
@@ -76,8 +78,8 @@ export const MemberProfileCard = ({
             Admin
           </Span>
         )}
-        {pCAIP10ToWallet(member?.wallet)?.toLowerCase() !==
-          account?.toLowerCase() &&
+        {pCAIP10ToWallet(member?.address)!.toLowerCase() !==
+          pCAIP10ToWallet(account!.toLowerCase()!) &&
           dropdownValues.length > 0 && (
             <Section
               maxWidth="fit-content"
@@ -85,8 +87,8 @@ export const MemberProfileCard = ({
               position="relative"
               zIndex="2"
               onClick={() => {
-                handleHeight(member.wallet);
-                setSelectedMemberAddress(member?.wallet);
+                handleHeight(member.address);
+                setSelectedMemberAddress(member?.address);
               }}
               style={{ cursor: 'pointer' }}
             >
@@ -95,7 +97,7 @@ export const MemberProfileCard = ({
        )} 
       </Section>
       {selectedMemberAddress?.toLowerCase() ==
-        member?.wallet?.toLowerCase() && (
+        member?.address?.toLowerCase() && (
         <DropdownContainer
           style={{ top: dropdownHeight! > 570 ? '30%' : '40%' }}
           theme={theme}
@@ -115,7 +117,6 @@ export const MemberProfileCard = ({
 const ProfileCardItem = styled(Section)<{ id: any; key: any; background: any }>`
   justify-content: space-between;
   padding: 8px 8px;
-  // border-radius: 16px;
   border-bottom: ${(props) => props.theme.border.modalInnerComponents};
   position: relative;
   box-sizing: border-box;

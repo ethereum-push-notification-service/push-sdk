@@ -10,6 +10,9 @@ const ChatViewComponentTest = () => {
     'bafyreig3gs4tpwxumiz5fxypyt4omlxhvrvuj66kfoyioeshawlau6lgem',
   ];
 
+
+
+
   return (
     <div>
       <h2>Chat UI Test page</h2>
@@ -19,10 +22,11 @@ const ChatViewComponentTest = () => {
 
         <ChatView 
         onVerificationFail={() => console.log("BOIIII RETURNNNSSSSS")} 
-        chatId='0xf8250D363BD1F25f52F10C21188fe82c68C049c4' 
-        component={<div style={{height: "100px"}}><a href="https://github.com" target="_blank">Test</a></div>}
+        chatId='2f422f4e16a9610ee15e0670fd9b488712daefaee26d282d5ed3cbf75d7c3345' 
+        // a72832107b8ae7624c1ec997cee8e8b2bc21db708465555c20c4d5e029210cd6
         limit={10}
          isConnected={true} 
+         autoConnect={true}
          groupInfoModalBackground={MODAL_BACKGROUND_TYPE.OVERLAY}
          groupInfoModalPositionType={MODAL_POSITION_TYPE.RELATIVE}
          verificationFailModalPosition={MODAL_POSITION_TYPE.RELATIVE}

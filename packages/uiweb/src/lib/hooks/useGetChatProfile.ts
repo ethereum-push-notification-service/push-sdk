@@ -1,10 +1,11 @@
 import * as PushAPI from '@pushprotocol/restapi';
 import { useCallback, useContext } from 'react';
 import { ChatAndNotificationPropsContext } from '../context';
+import { Env, IUser } from '@pushprotocol/restapi';
 
 export interface GetProfileParams {
   profileId: string;
-  env:PushAPI.Env
+  env:Env
 }
 
 const useGetChatProfile = () => {
@@ -12,7 +13,7 @@ const useGetChatProfile = () => {
     async ({
       profileId,
       env
-    }: GetProfileParams): Promise<PushAPI.IUser | undefined> => {
+    }: GetProfileParams): Promise<IUser | undefined> => {
       try {
         const profile = await PushAPI.user.get({
           env: env,

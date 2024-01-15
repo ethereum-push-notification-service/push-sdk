@@ -43,7 +43,7 @@ export const ChatViewComponent: React.FC<IChatViewComponentProps> = (
     component=null
   } = options || {};
 
-  const { env, signer, account, pgpPrivateKey } = useChatData();
+  const { env, signer, account } = useChatData();
 
   // const [conversationHash, setConversationHash] = useState<string>();
 
@@ -63,7 +63,7 @@ export const ChatViewComponent: React.FC<IChatViewComponentProps> = (
       padding="13px"
       theme={theme}
     >
-      {chatProfile && <ChatProfile component={component} chatId={chatId} style="Info" groupInfoModalBackground={groupInfoModalBackground} groupInfoModalPositionType={groupInfoModalPositionType}/>}
+      {chatProfile && <ChatProfile component={component} chatId={chatId}  groupInfoModalBackground={groupInfoModalBackground} groupInfoModalPositionType={groupInfoModalPositionType}/>}
       <Section
         flex="1 1 auto"
         overflow="hidden"
@@ -81,7 +81,7 @@ export const ChatViewComponent: React.FC<IChatViewComponentProps> = (
         )}
       </Section>
       {/* )} */}
-      {(!signer && !(!!account && !!pgpPrivateKey) && !isConnected) && (
+      {(!signer && !account && !isConnected) && (
         <Section flex="0 1 auto">
           <Span>
             You need to either pass signer or isConnected  to send
@@ -89,7 +89,7 @@ export const ChatViewComponent: React.FC<IChatViewComponentProps> = (
           </Span>
         </Section>
       )}
-      {(messageInput && (!!signer || (!!account && !!pgpPrivateKey) || isConnected )) && (
+      {(messageInput && (!!signer || (!!account) || isConnected )) && (
         <Section flex="0 1 auto" position='static'>
           <MessageInput
             onVerificationFail={onVerificationFail}

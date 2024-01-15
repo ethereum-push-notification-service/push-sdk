@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PushAPI } from '@pushprotocol/restapi';
+import { IMessageIPFS, PushAPI } from '@pushprotocol/restapi';
 import { ChatIcon } from '../../icons/ChatIcon';
 import { Modal } from './Modal';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import {
   SupportChatMainStateContext,
   SupportChatPropsContext,
 } from '../../context';
-import type { IMessageIPFS, ITheme, SignerType } from '../../types';
+import type { ITheme, SignerType } from '../../types';
 import './index.css';
 import type { ENV} from '../../config';
 import { Constants, lightTheme } from '../../config';

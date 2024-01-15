@@ -1,37 +1,8 @@
-import type { ReactElement } from 'react';
 import type { ENV } from '../config';
-import type { ParsedResponseType, IFeeds, Rules, PushAPI, } from '@pushprotocol/restapi';
+import type { ParsedResponseType, IFeeds,  PushAPI,IMessageIPFS } from '@pushprotocol/restapi';
 import { Bytes, TypedDataDomain, TypedDataField, providers } from 'ethers';
 
-export interface IMessageIPFS {
-  cid? : string;
-  chatId? :string;
-  event? :string;
-  from?:string;
-  message?: IMessage;
-  meta?: any;
-  origin?:string;
-  reference? :string;
-  to?: string[];
-  fromCAIP10: string;
-  toCAIP10: string;
-  fromDID: string;
-  toDID: string;
-  messageType: string;
-  messageContent: string;
-  signature: string;
-  sigType: string;
-  link: string | null;
-  timestamp?: number;
-  encType: string;
-  encryptedSecret: string | null;
-  icon?: ReactElement<string | any>;
-}
 
-interface IMessage {
-  content: string | undefined;
-  type: string | undefined;
-}
 
 export interface AccountEnvOptionsType {
   env?: ENV;
@@ -135,20 +106,3 @@ export interface FileMessageContent {
 }
 export type Messagetype = { messages: IMessageIPFS[]; lastThreadHash: string | null };
 
-export interface IGroup {
-  members: { wallet: string, publicKey: string, isAdmin: boolean, image: string }[],
-  pendingMembers: { wallet: string, publicKey: string, isAdmin: boolean, image: string }[],
-  contractAddressERC20: string | null,
-  numberOfERC20: number,
-  contractAddressNFT: string | null,
-  numberOfNFTTokens: number,
-  verificationProof: string,
-  groupImage: string | null,
-  groupName: string,
-  isPublic: boolean,
-  groupDescription: string | null,
-  groupCreator: string,
-  chatId: string,
-  groupType?:string | undefined,
-  rules?: Rules | null,
-}

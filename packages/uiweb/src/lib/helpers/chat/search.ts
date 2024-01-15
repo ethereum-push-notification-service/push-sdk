@@ -56,6 +56,7 @@ type getNewChatUserParamType = {
   searchText: string;
   fetchChatProfile: ({
     profileId,
+    env
   }: GetProfileParams) => Promise<IUser | undefined>;
   env: Env;
 };

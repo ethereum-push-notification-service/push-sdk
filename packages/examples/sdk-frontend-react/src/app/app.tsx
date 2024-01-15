@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Route, Routes, Link } from 'react-router-dom';
 import { useWeb3React } from '@web3-react/core';
+import { PushAPI } from "@pushprotocol/restapi";
 import ConnectButtonComp from './components/Connect';
 import { Checkbox } from './components/Checkbox';
 import Dropdown from './components/Dropdown';
@@ -69,7 +70,7 @@ import {
   SpaceInvitesComponent,
 } from './SpaceUITest';
 import { useSpaceComponents } from './SpaceUITest/useSpaceComponents';
-import * as PushAPI from '@pushprotocol/restapi';
+import * as PushApi from '@pushprotocol/restapi';
 import { ChatWidgetTest } from './ChatWidgetTest';
 import {
   CHAT_THEME_OPTIONS,
@@ -226,6 +227,7 @@ export function App() {
   const [env, setEnv] = useState<ENV>(ENV.PROD);
   const [isCAIP, setIsCAIP] = useState(false);
   const [signer, setSigner] = useState();
+  const [pushUser, setPushUser] = useState<PushAPI>();
 
   const { SpaceWidgetComponent } = useSpaceComponents();
   const [spaceId, setSpaceId] = useState<string>('');
@@ -250,12 +252,18 @@ export function App() {
     (async () => {
       if (!account || !env || !library) return;
 
-      const user = await PushAPI.user.get({ account: account, env });
+      const user = await PushApi.user.get({ account: account, env });
       let pgpPrivateKey;
       const librarySigner = await library.getSigner(account);
+      const pushUser = await PushAPI.initialize(librarySigner!, {
+        env: env,
+        account: account,
+        alpha: { feature: ['SCALABILITY_V2'] },
+    })
+    setPushUser(pushUser);
       setSigner(librarySigner);
       if (user?.encryptedPrivateKey) {
-        pgpPrivateKey = await PushAPI.chat.decryptPGPKey({
+        pgpPrivateKey = await PushApi.chat.decryptPGPKey({
           encryptedPGPPrivateKey: user.encryptedPrivateKey,
           account: account,
           signer: librarySigner,
@@ -317,7 +325,7 @@ export function App() {
           <Web3Context.Provider value={{ account, active, library, chainId }}>
             <SocketContext.Provider value={socketData}>
               <AccountContext.Provider value={{ pgpPrivateKey, setSpaceId }}>
-                <ChatUIProvider  env={env} theme={lightChatTheme} signer={signer}>
+                <ChatUIProvider  env={env} pushUser={pushUser} theme={lightChatTheme} >
                   <SpacesUIProvider spaceUI={spaceUI} theme={customDarkTheme}>
                     <Routes>
                       <Route

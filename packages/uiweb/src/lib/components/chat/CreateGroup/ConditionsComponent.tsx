@@ -263,8 +263,7 @@ const ConditionsComponent = ({
                   {criteria.map((singleCriteria, col) => (
                     <>
                       {singleCriteria.type && (
-                        <>
-                          <Section
+                        <Section
                             borderRadius={
                               theme.borderRadius?.modalInnerComponents
                             }
@@ -277,7 +276,6 @@ const ConditionsComponent = ({
                           >
                             <CriteriaSection criteria={singleCriteria} />
                           </Section>
-                        </>
                       )}
                     </>
                   ))}

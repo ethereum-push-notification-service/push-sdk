@@ -7,7 +7,7 @@ import OptionButtons, { OptionDescription } from '../reusables/OptionButtons';
 import { Section, Span, Spinner } from '../../reusables';
 import { InfoContainer, ToggleInput } from '../reusables';
 import { Button } from '../reusables';
-import {  ModalHeaderProps } from './CreateGroupModal';
+import { ModalHeaderProps } from './CreateGroupModal';
 import { GroupTypeState } from './CreateGroupModal';
 import { ThemeContext } from '../theme/ThemeProvider';
 import {
@@ -85,7 +85,7 @@ const AddConditionSection = ({
           />
         </Section>
       )}
-   
+
       <ConditionsComponent
         conditionData={[
           [{ operator: criteriaState.entryRootCondition }],
@@ -132,13 +132,12 @@ export const CreateGroupType = ({
   checked = false,
   setChecked,
   handleAddWallets,
+  setGroupInputDetails,
+  groupInputDetails,
 }: ModalHeaderProps & GroupTypeState) => {
-  const [groupEncryptionType, setGroupEncryptionType] = useState(
-    GROUP_TYPE_OPTIONS[0].value
-  );
 
   const theme = useContext(ThemeContext);
-  
+
   return (
     <Section flexDirection="column" gap="16px">
       <ModalHeader
@@ -156,9 +155,15 @@ export const CreateGroupType = ({
         <Section gap="20px" flexDirection="column" height="100%">
           <OptionButtons
             options={GROUP_TYPE_OPTIONS}
-            selectedValue={groupEncryptionType}
+            selectedValue={groupInputDetails.groupEncryptionType}
             handleClick={(newEl: string) => {
-              setGroupEncryptionType(newEl);
+              if (setGroupInputDetails) {
+                setGroupInputDetails((prevState) => ({
+                  ...prevState,
+                  groupEncryptionType: newEl,
+                }))
+              }
+              console.debug(newEl);
             }}
           />
 
@@ -210,7 +215,7 @@ export const CreateGroupType = ({
 };
 
 //styles
-const ScrollSection = styled(Section)<{ theme: IChatTheme }>`
+const ScrollSection = styled(Section) <{ theme: IChatTheme }>`
   &::-webkit-scrollbar-thumb {
     background: ${(props) => props.theme.scrollbarColor};
     border-radius: 10px;

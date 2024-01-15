@@ -1,10 +1,12 @@
-import { IFeeds } from '@pushprotocol/restapi';
-import { ThemeContext } from '../theme/ThemeProvider';
 import { Dispatch, useContext } from 'react';
+
+import { IFeeds } from '@pushprotocol/restapi';
+import styled from 'styled-components';
+
+import { ThemeContext } from '../theme/ThemeProvider';
 import { Section, Span, Spinner } from '../../reusables';
 import useApproveChatRequest from '../../../hooks/chat/useApproveChatRequest';
 import { useChatData } from '../../../hooks';
-import styled from 'styled-components';
 import { IChatTheme } from '../theme';
 
 /**
@@ -26,7 +28,7 @@ export const ApproveRequestBubble = ({
   chatId,
   setChatFeed,
 }: IApproveRequestBubbleProps) => {
-  const { pgpPrivateKey } = useChatData();
+  const { pushUser } = useChatData();
 
   const ApproveRequestText = {
     GROUP: `You were invited to the group ${chatFeed?.groupInformation?.groupName}. Please accept to continue messaging in this group.`,
@@ -37,15 +39,10 @@ export const ApproveRequestBubble = ({
   const { approveChatRequest, loading: approveLoading } =
     useApproveChatRequest();
 
+    //need to move it to hook
   const handleApproveChatRequest = async () => {
     try {
-      if (!pgpPrivateKey) {
-        return;
-      }
-
-      const response = await approveChatRequest({
-        chatId,
-      });
+      const response = await pushUser?.chat.accept(chatId);
       if (response) {
         const updatedChatFeed = { ...(chatFeed as IFeeds) };
         updatedChatFeed.intent = response;

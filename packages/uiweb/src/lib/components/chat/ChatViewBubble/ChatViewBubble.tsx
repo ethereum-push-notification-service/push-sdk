@@ -1,12 +1,10 @@
 import {
-  ReactElement,
   ReactNode,
   useContext,
   useEffect,
   useState,
 } from 'react';
 
-import moment from 'moment';
 import styled from 'styled-components';
 import { TwitterTweetEmbed } from 'react-twitter-embed';
 
@@ -25,13 +23,14 @@ import {
   pCAIP10ToWallet,
   shortenText,
 } from '../../../helpers';
+import { formatTime } from '../../../helpers/timestamp';
 
 const SenderMessageAddress = ({ chat }: { chat: IMessagePayload }) => {
   const { account } = useContext(ChatDataContext);
   const theme = useContext(ThemeContext);
   return (
     <>
-      {chat.fromCAIP10.split(':')[1] !== account && (
+      {(chat.fromCAIP10).split(':')[1] !== account && (
         <Span
           theme={theme}
           alignSelf="start"
@@ -40,8 +39,8 @@ const SenderMessageAddress = ({ chat }: { chat: IMessagePayload }) => {
           fontWeight={theme.fontWeight?.chatReceivedBubbleAddressText}
           color={theme.textColor?.chatReceivedBubbleAddressText}
         >
-          {chat.fromDID.split(':')[1].slice(0, 6)}...
-          {chat.fromDID.split(':')[1].slice(-6)}
+          {chat.fromCAIP10.split(':')[1].slice(0, 6)}...
+          {chat.fromCAIP10.split(':')[1].slice(-6)}
         </Span>
       )}
     </>
@@ -123,7 +122,7 @@ const MessageCard = ({
   isGroup: boolean;
 }) => {
   const theme = useContext(ThemeContext);
-  const time = moment(chat.timestamp).format('hh:mm a');
+  const time = formatTime(chat.timestamp)
   return (
     <MessageWrapper chat={chat} isGroup={isGroup} maxWidth="70%">
       <Section
@@ -339,7 +338,7 @@ const TwitterCard = ({
 export const ChatViewBubble = ({ decryptedMessagePayload }: { decryptedMessagePayload: IMessagePayload }) => {
   const { account } = useChatData();
   const position =
-    pCAIP10ToWallet(decryptedMessagePayload.fromDID).toLowerCase() !== account?.toLowerCase()
+    pCAIP10ToWallet(decryptedMessagePayload.fromCAIP10).toLowerCase() !== account?.toLowerCase()
       ? 0
       : 1;
   const { tweetId, messageType }: TwitterFeedReturnType = checkTwitterUrl({
@@ -347,7 +346,7 @@ export const ChatViewBubble = ({ decryptedMessagePayload }: { decryptedMessagePa
   });
   const [isGroup, setIsGroup] = useState<boolean>(false);
   useEffect(() => {
-    if (decryptedMessagePayload.toDID.split(':')[0] === 'eip155') {
+    if ((decryptedMessagePayload.toCAIP10).split(':')[0] === 'eip155') {
       if (isGroup) {
         setIsGroup(false);
       }
@@ -356,7 +355,7 @@ export const ChatViewBubble = ({ decryptedMessagePayload }: { decryptedMessagePa
         setIsGroup(true);
       }
     }
-  }, [decryptedMessagePayload.toDID, isGroup]);
+  }, [decryptedMessagePayload.toCAIP10, isGroup]);
 
   if (messageType === 'TwitterFeedLink') {
     decryptedMessagePayload.messageType = 'TwitterFeedLink';

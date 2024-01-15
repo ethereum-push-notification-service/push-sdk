@@ -13,11 +13,11 @@ import {
   getChats,
   walletToPCAIP10,
 } from '../../helpers';
-import type { IMessageIPFS } from '../../types';
 import { useChatScroll } from '../../hooks';
 import { Spinner } from './spinner/Spinner';
 import { Toaster } from './toaster/Toaster';
 import { Div } from '../reusables/sharedStyling';
+import { IMessageIPFS } from '@pushprotocol/restapi';
 
 const chatsFetchedLimit = 10;
 

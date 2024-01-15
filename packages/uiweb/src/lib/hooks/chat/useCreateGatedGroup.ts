@@ -6,27 +6,22 @@ import { GrouInfoType } from '../../components/chat/types';
 export const useCreateGatedGroup = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
-  const { pgpPrivateKey, env, account } = useChatData();
+  const { env, account, pushUser } = useChatData();
 
   const createGatedGroup = useCallback(
     async (groupInfoType:GrouInfoType,rules: any) => {
       setLoading(true);
       try {
         const payload = {
-          groupName: groupInfoType.groupName,
-          groupDescription:groupInfoType.groupDescription,
-          groupImage:groupInfoType.groupImage,
-          isPublic: groupInfoType.isPublic,
+          description:groupInfoType.groupDescription,
+          image:groupInfoType.groupImage,
+          private: !groupInfoType.isPublic,
           members: groupInfoType.members,
           admins: groupInfoType.admins,
-          account: account || undefined,
-          env: env,
-          pgpPrivateKey: pgpPrivateKey || undefined,
           rules: rules,
         };
-        const response = await PushAPI.chat.createGroup(payload);
+        const response = await pushUser?.chat.group.create(groupInfoType.groupName, payload);
         setLoading(false);
-        console.log(response)
         if (!response) {
           return false;
         }
@@ -37,7 +32,7 @@ export const useCreateGatedGroup = () => {
         return error.message;
       }
     },
-    [pgpPrivateKey, account, env]
+    [account, env, pushUser]
   );
 
   return { createGatedGroup, error, loading };

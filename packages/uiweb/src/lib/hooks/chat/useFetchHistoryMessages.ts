@@ -1,51 +1,41 @@
 
-import * as PushAPI from '@pushprotocol/restapi';
-import type { IMessageIPFS } from '@pushprotocol/restapi';
-import { useCallback, useContext, useState } from 'react';
-import { ChatDataContext } from '../../context';
+import { useCallback, useState } from 'react';
 import { useChatData } from './useChatData';
 
+interface HistoryMessagesParams {
+  chatId?: string;
+  limit?: number;
+  threadHash?: string | null;
+}
 
-
-
-  interface HistoryMessagesParams {
-    threadHash: string;
-    limit?: number;
-  }
-  
 
 const useFetchHistoryMessages
- = () => {
-  const [error, setError] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(false);
+  = () => {
+    const [error, setError] = useState<string>();
+    const [loading, setLoading] = useState<boolean>(false);
 
-  const { account, env,pgpPrivateKey } = useChatData();
+    const { account, env, pushUser, signer } = useChatData();
 
-  const historyMessages = useCallback(async ({threadHash,limit = 10,}:HistoryMessagesParams) => {
+    const historyMessages = useCallback(async ({ chatId, limit = 10, threadHash }: HistoryMessagesParams) => {
+      setLoading(true);
+      try {
+        const chatHistory = await pushUser?.chat.history(chatId ? chatId : "", {
+          limit: limit,
+          reference: threadHash,
+        })
+        chatHistory?.reverse();
+        return chatHistory;
+      } catch (error: Error | any) {
+        setLoading(false);
+        setError(error.message);
+        console.log(error);
+        return;
+      } finally {
+        setLoading(false);
+      }
+    }, [account, env, pushUser, signer]);
 
-    setLoading(true);
-    try {
-        const chatHistory:IMessageIPFS[] = await PushAPI.chat.history({
-            threadhash: threadHash,
-            account:account ? account : '0xeeE5A266D7cD954bE3Eb99062172E7071E664023',
-            toDecrypt: pgpPrivateKey ? true : false,
-            pgpPrivateKey: String(pgpPrivateKey),
-            limit: limit,
-            env: env
-          });
-          chatHistory.reverse();
-       return chatHistory;
-    } catch (error: Error | any) {
-      setLoading(false);
-      setError(error.message);
-      console.log(error);
-      return;
-    } finally {
-      setLoading(false);
-    }
-  }, [pgpPrivateKey,account,env]);
-
-  return { historyMessages, error, loading };
-};
+    return { historyMessages, error, loading };
+  };
 
 export default useFetchHistoryMessages;
