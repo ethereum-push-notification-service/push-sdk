@@ -50,6 +50,12 @@ export enum NOTIFICATION_TYPE {
   BROADCAST = 1,
   TARGETTED = 3,
   SUBSET = 4,
+  ENCRYPTED = 5
+}
+
+export enum SUPPORTED_ENC_TYPE {
+  PGPV1 = "PGPV1",
+  LITV1 = "LITV1" 
 }
 
 export enum ADDITIONAL_META_TYPE {
@@ -99,3 +105,5 @@ export const DEFAULT_DOMAIN = 'push.org';
 export enum VIDEO_NOTIFICATION_ACCESS_TYPE {
   PUSH_CHAT = 'PUSH_CHAT',
 }
+
+export const NONCE_LENGTH = 10

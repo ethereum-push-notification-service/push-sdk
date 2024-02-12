@@ -27,6 +27,7 @@ import {
 } from '../helpers';
 import { axiosGet, axiosPost } from '../utils/axiosUtil';
 import { PushAPI } from '../pushapi/PushAPI';
+import { Lit } from '../payloads/litHelper';
 
 // ERROR CONSTANTS
 const ERROR_ACCOUNT_NEEDED = 'Account is required';
@@ -139,6 +140,9 @@ export class PushNotificationBaseClass {
     options,
     channel,
     settings,
+    secret,
+    pgpPrivateKey,
+    lit,
   }: {
     signer: SignerType;
     env: ENV;
@@ -146,6 +150,9 @@ export class PushNotificationBaseClass {
     options: NotificationOptions;
     channel?: string;
     settings: any | null;
+    secret?: 'PGPV1' | 'LITV1',
+    pgpPrivateKey?: string,
+    lit?: Lit
   }): ISendNotificationInputOptions {
     if (!channel) {
       channel = `${this.account}`;
@@ -191,15 +198,16 @@ export class PushNotificationBaseClass {
         silent: options.config?.silent,
         additionalMeta: options.payload?.meta,
         index: options.payload?.category ? index : '',
+        sectype: secret?? null
       },
       recipients: notificationType.recipient,
       graph: options.advanced?.graph,
       ipfsHash: options.advanced?.ipfs,
       env: env,
       chatId: options.advanced?.chatid,
-      pgpPrivateKey: options.advanced?.pgpPrivateKey,
+      pgpPrivateKey: options.advanced?.pgpPrivateKey?? pgpPrivateKey,
+      lit: lit
     };
-
     return notificationPayload;
   }
 

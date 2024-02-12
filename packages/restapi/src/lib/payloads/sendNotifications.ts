@@ -6,7 +6,7 @@ import {
   getRecipientFieldForAPIPayload,
   getVerificationProof,
   getSource,
-  getUUID,
+  getUUID
 } from './helpers';
 import {
   getAPIBaseUrls,
@@ -14,7 +14,7 @@ import {
   getCAIPDetails,
   getConfig,
   isValidCAIP10NFTAddress,
-  isValidETHAddress,
+  isValidETHAddress
 } from '../helpers';
 import {
   IDENTITY_TYPE,
@@ -23,13 +23,24 @@ import {
   SOURCE_TYPES,
   VIDEO_CALL_TYPE,
   VIDEO_NOTIFICATION_ACCESS_TYPE,
+  SUPPORTED_ENC_TYPE
 } from './constants';
 import { ENV } from '../constants';
 import { getChannel } from '../channels/getChannel';
 import { axiosPost } from '../utils/axiosUtil';
+import { Lit } from './litHelper';
 /**
  * Validate options for some scenarios
  */
+
+function validateEncType(encType: string) {
+  if (
+    encType != SUPPORTED_ENC_TYPE.PGPV1 &&
+    encType != SUPPORTED_ENC_TYPE.LITV1
+  ) {
+    throw '[Push SDK] - Error - sendNotification() - unsupported encrypt';
+  }
+}
 function validateOptions(options: ISendNotificationInputOptions) {
   if (!options?.channel) {
     throw '[Push SDK] - Error - sendNotification() - "channel" is mandatory!';
@@ -57,6 +68,12 @@ function validateOptions(options: ISendNotificationInputOptions) {
     if (!options.payload) {
       throw '[Push SDK] - Error - sendNotification() - "payload" mandatory for Identity Type: Direct Payload, Minimal!';
     }
+  }
+  /**
+   * Check if the passed encryption is correct or not
+   */
+  if (options?.payload?.sectype) {
+    validateEncType(options?.payload?.sectype);
   }
 
   const isAdditionalMetaPayload = options.payload?.additionalMeta;
@@ -96,7 +113,7 @@ async function checkSimulateNotification(payloadOptions: {
     // fetch channel info
     const channelInfo = await getChannel({
       channel: channel,
-      env: env,
+      env: env
     });
     // check if channel exists, if it does then its not simulate type
     if (channelInfo) return false;
@@ -113,6 +130,12 @@ async function checkSimulateNotification(payloadOptions: {
   } catch (e) {
     return true;
   }
+}
+
+ function initialiseLIT(secType: "PGPV1" | "LITV1" | null, signer: any): Lit | null {
+  if(secType == "LITV1")
+    return new Lit(signer)
+  return null;
 }
 
 export async function sendNotification(options: ISendNotificationInputOptions) {
@@ -135,10 +158,9 @@ export async function sendNotification(options: ISendNotificationInputOptions) {
       chatId,
       rules,
       pgpPrivateKey,
+      lit
     } = options || {};
-
     validateOptions(options);
-
     if (
       payload &&
       payload.additionalMeta &&
@@ -162,16 +184,18 @@ export async function sendNotification(options: ISendNotificationInputOptions) {
       COMMUNICATOR_CONTRACT = EPNS_COMMUNICATOR_CONTRACT;
     }
 
-    const _recipients = await getRecipients({
+    const {_recipients, secret} = await getRecipients({
       env,
       notificationType: type,
       channel: _channelAddress,
       recipients,
-      secretType: payload?.sectype,
+      secretType: payload?.sectype?? null,
+      signer,
+      pgpPrivateKey,
+      lit
     });
 
-    const notificationPayload = getPayloadForAPIInput(options, _recipients);
-
+    const notificationPayload = getPayloadForAPIInput(options, _recipients, secret);
     const verificationProof = await getVerificationProof({
       senderType,
       signer,
@@ -187,7 +211,7 @@ export async function sendNotification(options: ISendNotificationInputOptions) {
       chatId:
         rules?.access.data.chatId ?? // for backwards compatibilty with 'chatId' param
         chatId,
-      pgpPrivateKey,
+      pgpPrivateKey
     });
 
     const identity = getPayloadIdentity({
@@ -195,14 +219,14 @@ export async function sendNotification(options: ISendNotificationInputOptions) {
       payload: notificationPayload,
       notificationType: type,
       graph,
-      ipfsHash,
+      ipfsHash
     });
 
     const source = (await checkSimulateNotification({
       channel: options.channel,
       recipient: options.recipients,
       type: options.type,
-      env: options.env,
+      env: options.env
     }))
       ? SOURCE_TYPES.SIMULATE
       : getSource(chainId, identityType, senderType);
@@ -220,7 +244,7 @@ export async function sendNotification(options: ISendNotificationInputOptions) {
         env,
         notificationType: type,
         recipients: recipients || '',
-        channel: _channelAddress,
+        channel: _channelAddress
       }),
       /* 
         - If 'rules' is not provided, check if 'chatId' is available.
@@ -232,18 +256,18 @@ export async function sendNotification(options: ISendNotificationInputOptions) {
             rules: rules ?? {
               access: {
                 data: { chatId },
-                type: VIDEO_NOTIFICATION_ACCESS_TYPE.PUSH_CHAT,
-              },
-            },
+                type: VIDEO_NOTIFICATION_ACCESS_TYPE.PUSH_CHAT
+              }
+            }
           }
-        : {}),
+        : {})
     };
 
     const requestURL = `${API_BASE_URL}/v1/payloads/`;
     return await axiosPost(requestURL, apiPayload, {
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   } catch (err) {
     console.error(

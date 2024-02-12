@@ -12,6 +12,7 @@ import {
 import { ENV, MessageType } from '../constants';
 import { EthEncryptedData } from '@metamask/eth-sig-util';
 import { Message, MessageObj } from './messageTypes';
+import { Lit } from '../payloads/litHelper';
 export * from './messageTypes';
 export * from './videoTypes';
 
@@ -106,7 +107,7 @@ export interface ISendNotificationInputOptions {
     body: string;
   };
   payload?: {
-    sectype?: string;
+    sectype?: 'PGPV1' | 'LITV1' | null;
     title: string;
     body: string;
     cta: string;
@@ -154,6 +155,7 @@ export interface ISendNotificationInputOptions {
   chatId?: string;
   rules?: SendNotificationRules;
   pgpPrivateKey?: string;
+  lit?: Lit 
 }
 
 export interface INotificationPayload {

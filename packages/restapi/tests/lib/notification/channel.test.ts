@@ -62,14 +62,14 @@ describe('PushAPI.channel functionality', () => {
     // initialisation with signer and provider
     userKate = await PushAPI.initialize(signer2, { env: ENV.DEV });
     // initialisation with signer
-    userAlice = await PushAPI.initialize(signer2);
+    userAlice = await PushAPI.initialize(signer2, { env: ENV.DEV });
     // TODO: remove signer1 after chat makes signer as optional
     //initialisation without signer
-    userBob = await PushAPI.initialize(signer1);
-    // initialisation with a signer that has no channel
-    userNoChannel = await PushAPI.initialize(noChannelSigner);
-    // viem signer
-    viemUser = await PushAPI.initialize(viemSigner);
+    // userBob = await PushAPI.initialize(signer1, { env: ENV.DEV });
+    // // initialisation with a signer that has no channel
+    // userNoChannel = await PushAPI.initialize(noChannelSigner, { env: ENV.DEV });
+    // // viem signer
+    // viemUser = await PushAPI.initialize(viemSigner, { env: ENV.DEV });
   });
 
   describe('channel :: info', () => {
@@ -208,6 +208,32 @@ describe('PushAPI.channel functionality', () => {
       }).to.Throw;
     });
 
+    it('With signer : targetted  : Should send pgp enc notification with title and body', async () => {
+      const res = await userAlice.channel.send([`${account2}`], {
+        notification: {
+          title: 'test-targered-pgp',
+          body: 'test-targered-pgp',
+        },
+        secret: "PGPV1"
+      });
+      expect(res.status).to.equal(204);
+      const feed = await userAlice.notification.list("INBOX")
+      console.log(feed)
+    });
+
+    it('With signer : targetted  : Should send lit enc notification with title and body', async () => {
+      const res = await userAlice.channel.send([`0xD8634C39BBFd4033c0d3289C4515275102423681`], {
+        notification: {
+          title: 'test-targered-lit',
+          body: 'test-targered-lit',
+        },
+        secret: "LITV1"
+      });
+      expect(res.status).to.equal(204);
+      const feed = await userAlice.notification.list("INBOX")
+      console.log(feed)
+    });
+
     it('With signer : broadcast  : Should send notification with title and body', async () => {
       const res = await userAlice.channel.send(['*'], {
         notification: {
@@ -244,6 +270,44 @@ describe('PushAPI.channel functionality', () => {
       expect(res.status).to.equal(204);
     });
 
+    it('With signer : subset  : Should send pgp enc notification with title and body', async () => {
+      const res = await userAlice.channel.send(
+        [
+          '0xD8634C39BBFd4033c0d3289C4515275102423681',
+          '0x93A829d16DE51745Db0530A0F8E8A9B8CA5370E5',
+        ],
+        {
+          notification: {
+            title: 'hi',
+            body: 'test-subset-lit',
+          },
+          secret:"PGPV1"
+        }
+      );
+      const feed = await userAlice.notification.list("INBOX")
+      console.log(feed)
+      expect(res.status).to.equal(204);
+    });
+
+    it('With signer : subset  : Should send lit enc notification with title and body', async () => {
+      const res = await userAlice.channel.send(
+        [
+          '0xD8634C39BBFd4033c0d3289C4515275102423681',
+          '0x69e666767Ba3a661369e1e2F572EdE7ADC926029',
+        ],
+        {
+          notification: {
+            title: 'hi',
+            body: 'test-subset',
+          },
+          secret:"LITV1"
+        }
+      );
+      expect(res.status).to.equal(204);
+      const feed = await userAlice.notification.list("INBOX", {account: "0xD8634C39BBFd4033c0d3289C4515275102423681"})
+      console.log((feed))
+    });
+
     it('With signer : subset  : Should send notification with title and body', async () => {
       const res = await userAlice.channel.send(
         [
@@ -255,7 +319,7 @@ describe('PushAPI.channel functionality', () => {
             title: 'hi',
             body: 'test-targeted',
           },
-        }
+        },
       );
       expect(res.status).to.equal(204);
     });

@@ -17,6 +17,7 @@ import {
 } from '../helpers';
 
 import { PushNotificationBaseClass } from './pushNotificationBase';
+import { Lit } from '../payloads/litHelper';
 // ERROR CONSTANTS
 const ERROR_CHANNEL_NEEDED = 'Channel is needed';
 const ERROR_INVALID_CAIP = 'Invalid CAIP format';
@@ -26,8 +27,11 @@ export const FEED_MAP = {
   SPAM: true,
 };
 export class Notification extends PushNotificationBaseClass {
-  constructor(signer?: SignerType, env?: ENV, account?: string) {
+  private lit!: Lit;
+  private pgpPrivateKey!: string
+  constructor(signer?: SignerType, env?: ENV, account?: string, pgpPrivateKey?: string) {
     super(signer, env, account);
+    this.pgpPrivateKey = pgpPrivateKey?? "";
   }
 
   /**
@@ -58,6 +62,10 @@ export class Notification extends PushNotificationBaseClass {
       // guest mode and valid address check
       this.checkUserAddressExists(account!);
       const nonCaipAccount = this.getAddressFromCaip(account!);
+      if(this.signer)
+        if(!this.lit){
+          this.lit = new Lit(this.signer);
+        }
       if (channels.length == 0) {
         // else return the response
         return await PUSH_USER.getFeeds({
@@ -67,6 +75,8 @@ export class Notification extends PushNotificationBaseClass {
           spam: FEED_MAP[spam],
           raw: raw,
           env: this.env,
+          pgpPrivateKey: this.pgpPrivateKey,
+          lit: this.lit
         });
       } else {
         const promises = channels.map(async (channel) => {

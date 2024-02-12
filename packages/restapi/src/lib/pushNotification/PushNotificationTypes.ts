@@ -1,6 +1,7 @@
 import { ProgressHookType } from '../types';
 import { GetAliasInfoOptionsType } from '../alias';
 import { ADDITIONAL_META_TYPE } from '../../lib/payloads/constants';
+import { Lit } from '../payloads/litHelper';
 
 export type SubscriptionOptions = {
   account?: string;
@@ -89,6 +90,7 @@ export type NotificationOptions = {
   config?: IConfig;
   advanced?: IAdvance;
   channel?: string;
+  secret?: 'PGPV1' | 'LITV1'
 };
 
 export type CreateChannelOptions = {

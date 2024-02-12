@@ -65,8 +65,8 @@ export class PushAPI {
     this.pgpPublicKey = pgpPublicKey;
     this.progressHook = progressHook;
     // Instantiate the notification classes
-    this.channel = new Channel(this.signer, this.env, this.account);
-    this.notification = new Notification(this.signer, this.env, this.account);
+    this.channel = new Channel(this.signer, this.env, this.account, this.decryptedPgpPvtKey);
+    this.notification = new Notification(this.signer, this.env, this.account, this.decryptedPgpPvtKey);
     // Initialize the instances of the four classes
     this.chat = new Chat(
       this.account,

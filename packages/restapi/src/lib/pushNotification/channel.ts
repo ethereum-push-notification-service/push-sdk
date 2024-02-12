@@ -25,14 +25,18 @@ import * as viem from 'viem';
 import { PushNotificationBaseClass } from './pushNotificationBase';
 import { Delegate } from './delegate';
 import { Alias } from './alias';
+import { Lit } from '../payloads/litHelper';
 
 export class Channel extends PushNotificationBaseClass {
   public delegate!: Delegate;
   public alias!: Alias;
-  constructor(signer?: SignerType, env?: ENV, account?: string) {
+  private pgpPrivateKey: string;
+  private lit!: Lit
+  constructor(signer?: SignerType, env?: ENV, account?: string, pgpPrivateKey?: string) {
     super(signer, env, account);
     this.delegate = new Delegate(signer, env, account);
     this.alias = new Alias(env!);
+    this.pgpPrivateKey = pgpPrivateKey?? "";
   }
 
   /**
@@ -129,6 +133,10 @@ export class Channel extends PushNotificationBaseClass {
       if (info && info.channel_settings) {
         settings = JSON.parse(info.channel_settings);
       }
+      if(options.secret && options.secret == "LITV1" && this.signer){
+        if(!this.lit)
+          this.lit = new Lit(this.signer);
+      }
       const lowLevelPayload = this.generateNotificationLowLevelPayload({
         signer: this.signer!,
         env: this.env!,
@@ -136,6 +144,9 @@ export class Channel extends PushNotificationBaseClass {
         options: options,
         channel: options.channel ?? this.account,
         settings: settings,
+        secret: options.secret,
+        pgpPrivateKey: this.pgpPrivateKey,
+        lit: this.lit
       });
       return await PUSH_PAYLOAD.sendNotification(lowLevelPayload);
     } catch (error) {

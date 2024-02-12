@@ -104,7 +104,6 @@ export function getFallbackETHCAIPAddress(env: ENV, address: string) {
   if (env === Constants.ENV.DEV || env === Constants.ENV.STAGING || env === Constants.ENV.LOCAL) {
     chainId = 11155111;
   }
-
   return `eip155:${chainId}:${address}`;
 }
 
