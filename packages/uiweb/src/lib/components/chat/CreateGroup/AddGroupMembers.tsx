@@ -9,16 +9,8 @@ import { findObject } from '../helpers/helper';
 import { AddWallets } from '../reusables';
 import { useChatData } from '../../../hooks';
 import { pCAIP10ToWallet } from '../../../helpers';
+import { AddWalletContentProps } from '../../../types';
 
-type AddWalletContentProps = {
-  onSubmit: () => void;
-  onClose: () => void;
-  handlePrevious: () => void;
-  memberList: any;
-  handleMemberList: any;
-  isLoading?: boolean;
-  isPublic: boolean;
-};
 export const AddGroupMembers = ({
   onSubmit,
   handlePrevious,

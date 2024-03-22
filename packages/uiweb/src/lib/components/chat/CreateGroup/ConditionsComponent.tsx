@@ -20,7 +20,9 @@ import EditSvg from '../../../icons/EditSvg.svg';
 import RemoveSvg from '../../../icons/RemoveSvg.svg';
 import { shortenText } from '../../../helpers';
 import { GUILD_COMPARISON_OPTIONS, NETWORK_ICON_DETAILS } from '../constants';
+import { CriteriaProps, MoreOptionsContainerProps } from '../../../types';
 
+// is it being used anywhere ?
 export type CriteraValueType = {
   invertedIcon?: any;
   id: number;
@@ -29,22 +31,6 @@ export type CriteraValueType = {
   icon?: string;
   function: () => void;
 };
-
-interface CriteriaProps {
-  conditionData: ConditionArray[];
-  moreOptions?: boolean;
-  deleteFunction?: (idx: number) => void;
-  updateFunction?: (idx: number) => void;
-}
-
-interface MoreOptionsContainerProps {
-  handleMoreOptionsClick: (row: number, col: number) => void;
-  setSelectedIndex: any;
-  selectedIndex: Array<number> | null;
-  row: number;
-  col: number;
-  dropDownValues: DropdownValueType[];
-}
 
 // fix dropdown position mobile view and z index
 const MoreOptionsContainer = ({

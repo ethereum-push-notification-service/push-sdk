@@ -28,15 +28,13 @@ import { Image } from '../../../config/styles';
 import { ProfilePicture, device } from '../../../config';
 import { CriteriaValidationErrorType } from '../types';
 
-import { MODAL_BACKGROUND_TYPE, MODAL_POSITION_TYPE } from '../../../types';
+import { MODAL_BACKGROUND_TYPE, MODAL_POSITION_TYPE, GroupInputDetailsType } from '../../../types';
 import {
   CreateGroupModalProps,
   IChatTheme,
 
 } from '../exportedTypes';
 import AutoImageClipper from '../reusables/AutoImageClipper';
-
-
 
 export const CREATE_GROUP_STEP_KEYS = {
   INPUT_DETAILS: 1,
@@ -48,14 +46,6 @@ export const CREATE_GROUP_STEP_KEYS = {
 
 export type CreateGroupStepKeys =
   typeof CREATE_GROUP_STEP_KEYS[keyof typeof CREATE_GROUP_STEP_KEYS];
-
-export interface GroupInputDetailsType {
-  groupName: string;
-  groupDescription: string;
-  groupImage: string;
-  groupMembers: any;
-  groupEncryptionType: string;
-}
 
 export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   onClose,

@@ -1,7 +1,12 @@
-import type { ReactElement } from 'react';
+import type { Dispatch, ReactElement, ReactNode } from 'react';
 import type { ENV } from '../config';
 import type { ParsedResponseType, IFeeds, Rules, PushAPI, } from '@pushprotocol/restapi';
 import { Bytes, TypedDataDomain, TypedDataField, providers } from 'ethers';
+import { ConditionArray, IChatTheme } from '../components';
+import { ChatMemberProfile } from '@pushprotocol/restapi';
+import { Group, User } from '../components';
+import { DropdownValueType } from '../components/chat/reusables';
+import { CriteriaStateType } from '../components/chat/types';
 
 export interface IMessageIPFS {
   cid? : string;
@@ -164,6 +169,15 @@ export interface IGroup {
   rules?: Rules | null,
 }
 
+export interface IChatUIProviderProps {
+  children: ReactNode;
+  theme?: IChatTheme;
+  account?: string | null;
+  signer?: SignerType | undefined;
+  pgpPrivateKey?: string | null;
+  user?: PushAPI | undefined;
+  env?: ENV;
+}
 
 export const MODAL_BACKGROUND_TYPE = {
   OVERLAY:'OVERLAY',
@@ -180,3 +194,138 @@ export const MODAL_BACKGROUND_TYPE = {
     } as const;
     
   export type ModalPositionType = keyof typeof MODAL_POSITION_TYPE;
+
+  export interface MemberPaginationData {
+    page: number;
+    finishedFetching: boolean;
+    loading: boolean;
+    reset: boolean;
+  }
+
+export interface MembersType {
+  accepted: ChatMemberProfile[];
+  pending: ChatMemberProfile[];
+  loading: boolean;
+}
+
+export interface ConditionsInformationProps {
+  theme: IChatTheme;
+  groupInfo?: Group | null;
+  alert?: boolean;
+  header?: string;
+  subheader?: string;
+}
+
+export type MemberListContainerType = {
+  key?: number;
+  memberData: User;
+  handleMemberList: (member: User) => void;
+  handleMembers?: (value: User[]) => void;
+  darkIcon: any;
+  memberList?: any;
+};
+
+export interface WalletProfileContainerProps {
+  id?: any;
+  background?: any;
+  border?: string;
+};
+
+export type MemberProfileCardProps = {
+  key?: number | string;
+  member?: any;
+  dropdownValues?: any;
+  selectedMemberAddress?: any;
+  setSelectedMemberAddress?: any;
+  dropdownRef?: any;
+};
+
+export interface ShadowedProps {
+  setPosition: boolean;
+}
+
+export type PendingMembersProps = {
+  pendingMemberPaginationData: MemberPaginationData;
+  setPendingMemberPaginationData: React.Dispatch<
+    React.SetStateAction<MemberPaginationData>
+  >;
+  pendingMembers: ChatMemberProfile[];
+  setShowPendingRequests: React.Dispatch<React.SetStateAction<boolean>>;
+  showPendingRequests: boolean;
+  count: number;
+  theme: IChatTheme;
+};
+
+export type AcceptedMembersProps = {
+  acceptedMemberPaginationData: MemberPaginationData;
+  setAcceptedMemberPaginationData: React.Dispatch<
+    React.SetStateAction<MemberPaginationData>
+  >;
+  acceptedMembers: ChatMemberProfile[];
+  chatId: string;
+};
+
+/**
+ * @interface IThemeProps
+ * this interface is used for defining the props for styled components
+ */
+export interface IThemeProps {
+  theme?: IChatTheme;
+}
+
+export interface IApproveRequestBubbleProps {
+  chatId: string;
+  chatFeed: IFeeds;
+  setChatFeed: Dispatch<IFeeds>;
+}
+
+export interface AddButtonsProps {
+  title: string;
+  handleNext?: () => void;
+}
+
+export type AddWalletContentProps = {
+  onSubmit: () => void;
+  onClose: () => void;
+  handlePrevious: () => void;
+  memberList: any;
+  handleMemberList: any;
+  isLoading?: boolean;
+  isPublic: boolean;
+};
+
+export interface CriteriaProps {
+  conditionData: ConditionArray[];
+  moreOptions?: boolean;
+  deleteFunction?: (idx: number) => void;
+  updateFunction?: (idx: number) => void;
+}
+
+export interface MoreOptionsContainerProps {
+  handleMoreOptionsClick: (row: number, col: number) => void;
+  setSelectedIndex: any;
+  selectedIndex: Array<number> | null;
+  row: number;
+  col: number;
+  dropDownValues: DropdownValueType[];
+}
+
+export interface GroupInputDetailsType {
+  groupName: string;
+  groupDescription: string;
+  groupImage: string;
+  groupMembers: any;
+  groupEncryptionType: string;
+}
+
+export interface AddConditionProps {
+  heading: string;
+  subHeading: string;
+  handleNext?: () => void;
+  criteriaState: CriteriaStateType;
+}
+
+export interface OperatorContainerProps {
+  operator: string;
+  setOperator: any;
+}

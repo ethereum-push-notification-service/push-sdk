@@ -21,30 +21,7 @@ import { pCAIP10ToWallet, shortenText } from '../../../helpers';
 import DismissAdmin from '../../../icons/dismissadmin.svg';
 import AddAdmin from '../../../icons/addadmin.svg';
 import Remove from '../../../icons/remove.svg';
-
-interface ShadowedProps {
-  setPosition: boolean;
-}
-
-type PendingMembersProps = {
-  pendingMemberPaginationData: MemberPaginationData;
-  setPendingMemberPaginationData: React.Dispatch<
-    React.SetStateAction<MemberPaginationData>
-  >;
-  pendingMembers: ChatMemberProfile[];
-  setShowPendingRequests: React.Dispatch<React.SetStateAction<boolean>>;
-  showPendingRequests: boolean;
-  count: number;
-  theme: IChatTheme;
-};
-type AcceptedMembersProps = {
-  acceptedMemberPaginationData: MemberPaginationData;
-  setAcceptedMemberPaginationData: React.Dispatch<
-    React.SetStateAction<MemberPaginationData>
-  >;
-  acceptedMembers: ChatMemberProfile[];
-  chatId: string;
-};
+import { ShadowedProps, PendingMembersProps, AcceptedMembersProps } from '../../../types';
 
 const UPDATE_KEYS = {
   REMOVE_MEMBER: 'REMOVE_MEMBER',

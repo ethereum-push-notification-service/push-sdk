@@ -6,20 +6,7 @@ import useApproveChatRequest from '../../../hooks/chat/useApproveChatRequest';
 import { useChatData } from '../../../hooks';
 import styled from 'styled-components';
 import { IChatTheme } from '../theme';
-
-/**
- * @interface IThemeProps
- * this interface is used for defining the props for styled components
- */
-interface IThemeProps {
-  theme?: IChatTheme;
-}
-export interface IApproveRequestBubbleProps {
-  chatId: string;
-  chatFeed: IFeeds;
-  setChatFeed: Dispatch<IFeeds>;
-}
-
+import { IThemeProps, IApproveRequestBubbleProps } from '../../../types';
 
 export const ApproveRequestBubble = ({
   chatFeed,

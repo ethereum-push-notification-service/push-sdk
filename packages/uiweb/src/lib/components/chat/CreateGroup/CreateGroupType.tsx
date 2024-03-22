@@ -20,6 +20,7 @@ import { SelectedCriteria } from '../../../hooks/chat/useCriteriaState';
 
 import { ACCESS_TYPE_TITLE } from '../constants';
 import { IChatTheme } from '../exportedTypes';
+import { AddConditionProps } from '../../../types';
 
 export const GROUP_TYPE_OPTIONS: Array<OptionDescription> = [
   {
@@ -33,13 +34,6 @@ export const GROUP_TYPE_OPTIONS: Array<OptionDescription> = [
     value: 'encrypted',
   },
 ];
-
-interface AddConditionProps {
-  heading: string;
-  subHeading: string;
-  handleNext?: () => void;
-  criteriaState: CriteriaStateType;
-}
 
 const AddConditionSection = ({
   heading,

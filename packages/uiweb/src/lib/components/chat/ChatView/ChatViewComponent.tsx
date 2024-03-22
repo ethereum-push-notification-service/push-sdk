@@ -16,14 +16,7 @@ import useMediaQuery from '../../../hooks/useMediaQuery';
 import { ChatProfile } from '../ChatProfile';
 import { MessageInput } from '../MessageInput';
 import { ThemeContext } from '../theme/ThemeProvider';
-
-/**
- * @interface IThemeProps
- * this interface is used for defining the props for styled components
- */
-interface IThemeProps {
-  theme?: IChatTheme;
-}
+import { IThemeProps } from '../../../types';
 
 export const ChatViewComponent: React.FC<IChatViewComponentProps> = (
   options: IChatViewComponentProps

@@ -10,15 +10,7 @@ import { ThemeContext } from '../theme/ThemeProvider';
 import { getAddressFromSigner } from '../../../helpers';
 import { IChatTheme } from '../theme';
 import { device } from '../../../config';
-
-/**
- * @interface IThemeProps
- * this interface is used for defining the props for styled components
- */
-interface IThemeProps {
-  theme?: IChatTheme;
-}
-
+import { IThemeProps } from '../../../types';
 
 export const ConnectButtonSub = ({autoConnect = false})  => {
   const {env} = useChatData()

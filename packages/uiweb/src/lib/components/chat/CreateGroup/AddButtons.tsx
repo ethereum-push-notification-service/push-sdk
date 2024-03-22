@@ -2,11 +2,7 @@ import React, { useContext } from 'react'
 
 import { Button } from '../reusables'
 import { ThemeContext } from '../theme/ThemeProvider';
-
-interface AddButtonsProps {
-    title: string;
-    handleNext?: () => void;
-}
+import { AddButtonsProps } from '../../../types';
 
 export const AddButtons = ({title, handleNext}: AddButtonsProps) => {
   const theme = useContext(ThemeContext);

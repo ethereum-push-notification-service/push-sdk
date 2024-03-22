@@ -3,19 +3,13 @@ import { Section, Span } from '../../reusables';
 import { OPERATOR_OPTIONS, OPERATOR_OPTIONS_INFO } from '../constants';
 import  OptionButtons  from '../reusables/OptionButtons';
 import { ThemeContext } from '../theme/ThemeProvider';
+import { OperatorContainerProps } from '../../../types';
 
-interface OperatorContainerProps {
-  operator: string;
-  setOperator: any;
-
-}
 export const OperatorContainer = ({
   operator,
   setOperator,
 }: OperatorContainerProps) => {
   const theme = useContext(ThemeContext);
-
-
 
   return (
     <Section flexDirection="column" gap="12px">

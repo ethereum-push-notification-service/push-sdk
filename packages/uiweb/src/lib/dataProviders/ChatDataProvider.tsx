@@ -14,19 +14,9 @@ import useDecryptPGPKey from '../hooks/useDecryptPGPKey';
 import useInitializePushUser from '../hooks/useInitializeUser';
 import useInitializeUser from '../hooks/useInitializeUser';
 import useChatProfile from '../hooks/chat/useChatProfile';
-
+import { IChatUIProviderProps } from '../types';
 import usePushUserInfoUtilities from '../hooks/chat/useUserInfoUtilities';
 import useUserProfile from '../hooks/useUserProfile';
-
-export interface IChatUIProviderProps {
-  children: ReactNode;
-  theme?: IChatTheme;
-  account?: string | null;
-  signer?: SignerType | undefined;
-  pgpPrivateKey?: string | null;
-  user?: PushAPI | undefined;
-  env?: ENV;
-}
 
 export const ChatUIProvider = ({
   children,

@@ -15,16 +15,7 @@ import { pCAIP10ToWallet } from '../../../helpers';
 import { device } from '../../../config';
 import { ProfileContainer } from '../reusables';
 import { isAdmin } from '../helpers';
-
-type MemberProfileCardProps = {
-  key?: number | string;
-  member?: any;
-  dropdownValues?: any;
-  selectedMemberAddress?: any;
-  setSelectedMemberAddress?: any;
-  dropdownRef?: any;
-};
-
+import { MemberProfileCardProps } from '../../../types';
 
 export const MemberProfileCard = ({
   key,

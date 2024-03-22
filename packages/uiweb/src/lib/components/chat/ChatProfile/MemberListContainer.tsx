@@ -1,36 +1,17 @@
 import { useContext, useRef, useState } from 'react';
-
 import styled from 'styled-components';
-
 import { ThemeContext } from '../theme/ThemeProvider';
 import { useClickAway } from '../../../hooks';
 import Dropdown, { DropdownValueType } from '../reusables/DropDown';
 import { Section, Span } from '../../reusables/sharedStyling';
-
 import DismissAdmin from '../../../icons/dismissadmin.svg';
 import AddAdmin from '../../../icons/addadmin.svg';
 import Remove from '../../../icons/remove.svg';
-import { IChatTheme, User } from '../exportedTypes';
 import { findObject } from '../helpers/helper';
 import { device } from '../../../config';
 import { shortenText } from '../../../helpers';
 import { ProfileContainer } from '../reusables';
-
-
-type MemberListContainerType = {
-  key?: number;
-  memberData: User;
-  handleMemberList: (member: User) => void;
-  handleMembers?: (value: User[]) => void;
-  darkIcon: any;
-  memberList?: any;
-};
-
-export interface WalletProfileContainerProps {
-  id?: any;
-  background?: any;
-  border?: string;
-};
+import { MemberListContainerType, WalletProfileContainerProps } from '../../../types';
 
 export const MemberListContainer = ({
   key,

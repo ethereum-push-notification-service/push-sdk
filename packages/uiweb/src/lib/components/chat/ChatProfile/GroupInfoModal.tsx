@@ -45,27 +45,7 @@ import useGroupMemberUtilities from '../../../hooks/chat/useGroupMemberUtilities
 import useChatProfile from '../../../hooks/chat/useChatProfile';
 import { resolvePromisesSeq, transformIUserToChatMemberProfile } from '../helpers';
 import useUserProfile from '../../../hooks/useUserProfile';
-
-export interface MemberPaginationData {
-  page: number;
-  finishedFetching: boolean;
-  loading: boolean;
-  reset: boolean;
-}
-
-interface MembersType {
-  accepted: ChatMemberProfile[];
-  pending: ChatMemberProfile[];
-  loading: boolean;
-}
-
-interface ConditionsInformationProps {
-  theme: IChatTheme;
-  groupInfo?: Group | null;
-  alert?: boolean;
-  header?: string;
-  subheader?: string;
-}
+import { MemberPaginationData, MembersType, ConditionsInformationProps } from '../../../types';
 
 export const ConditionsInformation = ({
   theme,
