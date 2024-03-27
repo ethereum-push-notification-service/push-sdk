@@ -1,17 +1,22 @@
 import type { ReactElement } from 'react';
 import type { ENV } from '../config';
-import type { ParsedResponseType, IFeeds, Rules, PushAPI, } from '@pushprotocol/restapi';
+import type {
+  ParsedResponseType,
+  IFeeds,
+  Rules,
+  PushAPI,
+} from '@pushprotocol/restapi';
 import { Bytes, TypedDataDomain, TypedDataField, providers } from 'ethers';
 
 export interface IMessageIPFS {
-  cid? : string;
-  chatId? :string;
-  event? :string;
-  from?:string;
+  cid?: string;
+  chatId?: string;
+  event?: string;
+  from?: string;
   message?: IMessage;
   meta?: any;
-  origin?:string;
-  reference? :string;
+  origin?: string;
+  reference?: string;
   to?: string[];
   fromCAIP10: string;
   toCAIP10: string;
@@ -94,30 +99,33 @@ export type viemSignerType = {
   provider?: any;
 };
 
-export type SignerType =  ethersV5SignerType| ethersV6SignerType| viemSignerType;;
+export type SignerType =
+  | ethersV5SignerType
+  | ethersV6SignerType
+  | viemSignerType;
 
 export type ParsedNotificationType = ParsedResponseType & {
-  channel:string;
+  channel: string;
 };
 
-export type NotificationFeedsType = { [key: string]:ParsedNotificationType};
-export type ChatFeedsType = { [key: string]:IFeeds};
+export type NotificationFeedsType = { [key: string]: ParsedNotificationType };
+export type ChatFeedsType = { [key: string]: IFeeds };
 export interface Web3NameListType {
   [key: string]: string;
 }
 export const PUSH_TABS = {
   CHATS: 'CHATS',
-  APP_NOTIFICATIONS: 'APP_NOTIFICATIONS'
+  APP_NOTIFICATIONS: 'APP_NOTIFICATIONS',
 } as const;
 
 export const SOCKET_TYPE = {
   CHAT: 'chat',
-  NOTIFICATION: 'notification'
+  NOTIFICATION: 'notification',
 } as const;
 
 export const PUSH_SUB_TABS = {
   REQUESTS: 'REQUESTS',
-  SPAM:'SPAM'
+  SPAM: 'SPAM',
 } as const;
 
 export const LOCAL_STORAGE_KEYS = {
@@ -128,55 +136,82 @@ export const SIDEBAR_PLACEHOLDER_KEYS = {
   CHAT: 'CHAT',
   SEARCH: 'SEARCH',
   NOTIFICATION: 'NOTIFICATION',
-  NEW_CHAT: 'NEW_CHAT'
+  NEW_CHAT: 'NEW_CHAT',
 } as const;
 
-export type SidebarPlaceholderKeys = (typeof SIDEBAR_PLACEHOLDER_KEYS)[keyof typeof SIDEBAR_PLACEHOLDER_KEYS];
+export type SidebarPlaceholderKeys =
+  typeof SIDEBAR_PLACEHOLDER_KEYS[keyof typeof SIDEBAR_PLACEHOLDER_KEYS];
 
-export type LocalStorageKeys = (typeof LOCAL_STORAGE_KEYS)[keyof typeof LOCAL_STORAGE_KEYS];
-export type PushTabs = (typeof PUSH_TABS)[keyof typeof PUSH_TABS];
-export type PushSubTabs = (typeof PUSH_SUB_TABS)[keyof typeof PUSH_SUB_TABS];
-export type SocketType = (typeof SOCKET_TYPE)[keyof typeof SOCKET_TYPE];
+export type LocalStorageKeys =
+  typeof LOCAL_STORAGE_KEYS[keyof typeof LOCAL_STORAGE_KEYS];
+export type PushTabs = typeof PUSH_TABS[keyof typeof PUSH_TABS];
+export type PushSubTabs = typeof PUSH_SUB_TABS[keyof typeof PUSH_SUB_TABS];
+export type SocketType = typeof SOCKET_TYPE[keyof typeof SOCKET_TYPE];
 
 export interface FileMessageContent {
-  content: string
-  name: string
-  type: string
-  size: number
+  content: string;
+  name: string;
+  type: string;
+  size: number;
 }
-export type Messagetype = { messages: IMessageIPFS[]; lastThreadHash: string | null };
+export type Messagetype = {
+  messages: IMessageIPFS[];
+  lastThreadHash: string | null;
+};
 
 export interface IGroup {
-  members: { wallet: string, publicKey: string, isAdmin: boolean, image: string }[],
-  pendingMembers: { wallet: string, publicKey: string, isAdmin: boolean, image: string }[],
-  contractAddressERC20: string | null,
-  numberOfERC20: number,
-  contractAddressNFT: string | null,
-  numberOfNFTTokens: number,
-  verificationProof: string,
-  groupImage: string | null,
-  groupName: string,
-  isPublic: boolean,
-  groupDescription: string | null,
-  groupCreator: string,
-  chatId: string,
-  groupType?:string | undefined,
-  rules?: Rules | null,
+  members: {
+    wallet: string;
+    publicKey: string;
+    isAdmin: boolean;
+    image: string;
+  }[];
+  pendingMembers: {
+    wallet: string;
+    publicKey: string;
+    isAdmin: boolean;
+    image: string;
+  }[];
+  contractAddressERC20: string | null;
+  numberOfERC20: number;
+  contractAddressNFT: string | null;
+  numberOfNFTTokens: number;
+  verificationProof: string;
+  groupImage: string | null;
+  groupName: string;
+  isPublic: boolean;
+  groupDescription: string | null;
+  groupCreator: string;
+  chatId: string;
+  groupType?: string | undefined;
+  rules?: Rules | null;
 }
 
-
 export const MODAL_BACKGROUND_TYPE = {
-  OVERLAY:'OVERLAY',
+  OVERLAY: 'OVERLAY',
   BLUR: 'BLUR',
   TRANSPARENT: 'TRANSPARENT',
+} as const;
 
-  } as const;
-  
-  export type ModalBackgroundType = keyof typeof MODAL_BACKGROUND_TYPE;
+export type ModalBackgroundType = keyof typeof MODAL_BACKGROUND_TYPE;
 
-  export const MODAL_POSITION_TYPE = {
-    RELATIVE:'RELATIVE',
-    GLOBAL: 'GLOBAL',
-    } as const;
-    
-  export type ModalPositionType = keyof typeof MODAL_POSITION_TYPE;
+export const MODAL_POSITION_TYPE = {
+  RELATIVE: 'RELATIVE',
+  GLOBAL: 'GLOBAL',
+} as const;
+
+export type ModalPositionType = keyof typeof MODAL_POSITION_TYPE;
+
+export interface FrameDetails {
+  image: string;
+  siteURL: string;
+  postURL: string;
+  buttons: {
+    index: string;
+    content: string;
+    action?: string;
+    target?: string;
+  }[];
+  input?: { name: string; content: string };
+  state?: string;
+}

@@ -16,7 +16,6 @@ import styled, { ThemeProvider } from 'styled-components';
 import { IChatTheme } from '../theme';
 import { ThemeContext } from '../theme/ThemeProvider';
 
-
 export interface IButtonProps {
   width?: string;
   height?: string;
@@ -31,8 +30,10 @@ type CustomStyleParamsType = {
   fontSize?: string;
   fontWeight?: string;
   padding?: string;
-  border?:string;
-  borderRadius?:string;
+  border?: string;
+  borderRadius?: string;
+  height?: string;
+  maxHeight?: string;
 };
 
 /**
@@ -48,15 +49,15 @@ export const Button: React.FC<IButtonProps> = (props) => {
 
   return (
     <ThemeProvider theme={theme}>
-    <ChatButton
-      onClick={onClick}
-      width={width}
-      height={height}
-      theme={theme}
-      customStyle={customStyle}
-    >
-      {props.children}
-    </ChatButton>
+      <ChatButton
+        onClick={onClick}
+        width={width}
+        height={height}
+        theme={theme}
+        customStyle={customStyle}
+      >
+        {props.children}
+      </ChatButton>
     </ThemeProvider>
   );
 };
@@ -66,7 +67,7 @@ const ChatButton = styled.button<IButtonProps>`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap:'2px' ;
+  gap: '2px';
   padding: ${(props) =>
     props.customStyle?.padding ? props.customStyle.padding : '16px'};
   margin-top: 12px;
@@ -83,7 +84,9 @@ const ChatButton = styled.button<IButtonProps>`
       ? props.customStyle.borderRadius
       : props.theme.borderRadius.modalInnerComponents};
   border: ${(props) =>
-    props.customStyle?.border ? props.customStyle.border : props.theme.border.modal};
+    props.customStyle?.border
+      ? props.customStyle.border
+      : props.theme.border.modal};
   font-size: 16px;
   font-weight: ${(props) =>
     props.customStyle?.fontWeight ? props.customStyle.fontWeight : '500'};

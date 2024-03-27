@@ -4,3 +4,6 @@ export * from './formatbody';
 export * from './time';
 export * from './ipfs';
 export * from './formatType';
+export * from './hasWebLink';
+export * from './extractWebLink';
+export * from './getFormattedMetadata';
