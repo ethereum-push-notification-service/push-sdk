@@ -38,21 +38,6 @@ src="https://res.cloudinary.com/drdjegqln/image/upload/v1686227558/Push-Logo-Sta
   - [Add the WebViewCrypto component in your app root](#add-the-webviewcrypto-component-in-your-app-root)
   - [Start using the Push SDK in your app](#start-using-the-push-sdk-in-your-app)
 
-- [React Native SDK Features](#react-native-sdk-features)
-
-  - [User](#user)
-    - [Create User](#create-user)
-    - [Get User](#get-user)
-    - [Profile Update](#profile-update)
-    - [Profile Upgrade](#profile-upgrade)
-  - [Chat](#chat)
-    - [Decrypt PGP key](#decrypt-pgp-key)
-    - [Chats](#chats)
-    - [Conversation Hash](#conversation-hash)
-    - [Latest Chat message](#latest-chat-message)
-    - [Create Group](#create-group)
-    - [Update Group](#update-group)
-
 - [Other Features](#other-features)
 - [Resources](#resources)
 - [Contributing](#contributing)
@@ -123,191 +108,28 @@ return (
 
 #### Start using the Push SDK in your app
 
-```jsx
-import { createUser, Constants } from '@pushprotocol/react-native-sdk';
-
-const user = await createUser({
-  account: account,
-  signer: signer,
-  env: Constants.ENV.DEV,
-});
-```
-
-## React Native SDK Features
-
-### User
-
-#### Create User
+For the complete list of features and how to use them, please refer to the [restapi documentation](https://github.com/push-protocol/push-sdk/blob/main/packages/restapi/README.md#sdk-features).
 
 ```jsx
-import { createUser, Constants } from '@pushprotocol/react-native-sdk';
+import { PushAPI, CONSTANTS } from '@pushprotocol/react-native-sdk';
+import { ethers } from 'ethers';
 
-const user = await createUser({
-  account: 'eip155:0xACEe0D180d0118FD4F3027Ab801cc862520570d1',
-  signer: signer,
-  env: Constants.ENV.DEV,
-});
-```
+const signer = new ethers.Wallet(
+  '07da77f7471e5cf046ea3793421cbce90fd42a4cfcf520046a490ca1a9b636e0'
+);
+const account = `eip155:${signer.address}`;
 
-#### Get User
-
-```jsx
-import { get, Constants } from '@pushprotocol/react-native-sdk';
-
-const user = await get({
-  account: 'eip155:0xACEe0D180d0118FD4F3027Ab801cc862520570d1',
-  env: Constants.ENV.DEV,
-});
-```
-
-#### Profile Update
-
-```jsx
-import { profileUpdate, Constants } from '@pushprotocol/react-native-sdk';
-
-await profileUpdate({
-  account: 'eip155:0xACEe0D180d0118FD4F3027Ab801cc862520570d1',
-  env: Constants.ENV.DEV,
-  pgpPrivateKey: pgpPrivateKey,
-  profile: {
-    name: 'Updated Name',
-    desc: 'Updated Desc',
-  },
-});
-```
-
-#### Profile Upgrade
-
-```jsx
-import { profileUpgrade, Constants } from '@pushprotocol/react-native-sdk';
-
-const upgradedProfile = await profileUpgrade({
-  signer: signer,
-  pgpPrivateKey: pgpPrivateKey,
-  pgpPublicKey: pgpPublicKey,
-  pgpEncryptionVersion: Constants.ENCRYPTION_TYPE.NFTPGP_V1,
-  account: account,
-  env: Constants.ENV.DEV,
-  additionalMeta: {
-    NFTPGP_V1: {
-      password: '0xrandompass', //new nft profile password
-    },
-  },
-});
-```
-
-### Chat
-
-#### Decrypt PGP key
-
-```jsx
-import { PushApi } from '@pushprotocol/react-native-sdk';
-
-const user = await get({
-  account: 'eip155:0xACEe0D180d0118FD4F3027Ab801cc862520570d1',
-  env: Constants.ENV.DEV,
+const alice = await PushAPI.initialize(signer, {
+  account,
+  env: CONSTANTS.ENV.DEV,
 });
 
-const pgpDecryptedPvtKey = await PushApi.chat.decryptPGPKey({
-  encryptedPGPPrivateKey: user.encryptedPrivateKey,
-  signer: signer,
+const spam = await alice.notification.list('SPAM', {
+  limit: 10,
+  page: 1,
 });
-```
 
-#### Chats
-
-```jsx
-import { chats, Constants } from '@pushprotocol/react-native-sdk';
-
-const chatList = await chats({
-  account: 'eip155:0xACEe0D180d0118FD4F3027Ab801cc862520570d1',
-  pgpPrivateKey: pgpDecryptedPvtKey,
-  toDecrypt: true,
-  env: Constants.ENV.DEV,
-});
-```
-
-#### Conversation Hash
-
-```jsx
-import { PushApi, Constants } from '@pushprotocol/react-native-sdk';
-
-const hash = await PushApi.chat.conversationHash({
-  account: 'eip155:0xACEe0D180d0118FD4F3027Ab801cc862520570d1',
-  conversationId: conversationId,
-  env: Constants.ENV.DEV,
-});
-```
-
-#### Latest Chat message
-
-```jsx
-import { latest, Constants } from '@pushprotocol/react-native-sdk';
-
-const msg = await latest({
-  threadhash: hash,
-  toDecrypt: true,
-  account: 'eip155:0xACEe0D180d0118FD4F3027Ab801cc862520570d1',
-  env: Constants.ENV.DEV,
-});
-```
-
-#### Create Group
-
-```jsx
-import { createGroup, Constants } from '@pushprotocol/react-native-sdk';
-
-const res = await createGroup({
-  groupName: groupName,
-  groupDescription: 'test',
-  groupImage: 'https://github.com',
-  account: account,
-  signer: signer,
-  members: [
-    '0x83d4c16b15F7BBA501Ca1057364a1F502d1c34D5',
-    '0x6Ff7DF70cAACAd6B35d2d30eca6bbb4E86fEE62f',
-  ],
-  admins: [],
-  isPublic: true,
-  env: Constants.ENV.DEV,
-});
-```
-
-#### Update Group
-
-```jsx
-import { updateGroup, Constants } from '@pushprotocol/react-native-sdk';
-
-const res = await updateGroup({
-  groupName,
-  groupDescription: 'test',
-  groupImage: 'https://github.com',
-  chatId,
-  account: account,
-  signer: signer,
-  admins: ['0x83d4c16b15F7BBA501Ca1057364a1F502d1c34D5'],
-  members: [
-    '0x6Ff7DF70cAACAd6B35d2d30eca6bbb4E86fEE62f',
-    '0x6d118b28ebd82635A30b142D11B9eEEa2c0bea26',
-    '0x83d4c16b15F7BBA501Ca1057364a1F502d1c34D5',
-  ],
-  env: Constants.ENV.DEV,
-});
-```
-
-## Other Features
-
-All the remaining features of the `restapi` SDK are available in a similar manner to the `restapi` package. You can read more about them <a href="https://github.com/ethereum-push-notification-service/push-sdk/blob/main/packages/restapi/README.md">HERE</a>
-
-These functions can be accessed by simply importing the `PushApi` object from the `@pushprotocol/react-native-sdk` package.
-
-```jsx
-import { PushApi } from '@pushprotocol/react-native-sdk';
-
-const response = await PushApi.chat.getGroupByName({
-  groupName: 'Push Group Chat 3',
-  env: 'staging',
-});
+console.log('SPAM NOTIFICATIONS', spam);
 ```
 
 ## Resources
@@ -316,7 +138,7 @@ const response = await PushApi.chat.getGroupByName({
 - **[Docs](https://docs.push.org/developers/)** For comprehensive documentation.
 - **[Blog](https://medium.com/push-protocol)** To learn more about our partners, new launches, etc.
 - **[Discord](discord.gg/pushprotocol)** for support and discussions with the community and the team.
-- **[GitHub](https://github.com/ethereum-push-notification-service)** for source code, project board, issues, and pull requests.
+- **[GitHub](https://github.com/push-protocol)** for source code, project board, issues, and pull requests.
 - **[Twitter](https://twitter.com/pushprotocol)** for the latest updates on the product and published blogs.
 
 ## Contributing
@@ -327,7 +149,7 @@ Push Protocol is an open source Project. We firmly believe in a completely trans
 - Feature Request: Please submit a feature request if you have an idea or discover a capability that would make development simpler and more reliable.
 - Documentation Request: If you're reading the Push documentation and believe that we're missing something, please create a docs request.
 
-Read how you can contribute <a href="https://github.com/ethereum-push-notification-service/push-sdk/blob/main/contributing.md">HERE</a>
+Read how you can contribute <a href="https://github.com/push-protocol/push-sdk/blob/main/CONTRIBUTING.md">HERE</a>
 
 Not sure where to start? Join our discord and we will help you get started!
 
@@ -335,4 +157,4 @@ Not sure where to start? Join our discord and we will help you get started!
 
 ## License
 
-Check out our License <a href='https://github.com/ethereum-push-notification-service/push-sdk/blob/main/license-v1.md'>HERE </a>
+Check out our License <a href='https://github.com/push-protocol/push-sdk/blob/main/license-v1.md'>HERE </a>

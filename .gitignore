@@ -38,9 +38,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# React Native
-/apps/demonative/src/app/config.ts
-
 # Xcode
 #
 build/
@@ -160,11 +157,6 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 /
-
-# apps/demonative
-apps/demonative/ios/Pods
-
-# React Native
 
 # Xcode
 #

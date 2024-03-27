@@ -2,7 +2,6 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "demonative": "apps/demonative",
     "examples-sdk-frontend-react": "packages/examples/sdk-frontend-react",
     "ledgerlive": "packages/ledgerlive",
     "restapi": "packages/restapi",
