@@ -55,13 +55,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/ethereum-push-notification-service/push-sdk",
+  "repository": "https://github.com/push-protocol/push-sdk",
   "author": "Push Protocol <support@push.org> (https://www.push.org)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ethereum-push-notification-service/push-sdk/issues"
+    "url": "https://github.com/push-protocol/push-sdk/issues"
   },
-  "homepage": "https://github.com/ethereum-push-notification-service/push-sdk#readme",
+  "homepage": "https://github.com/push-protocol/push-sdk#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

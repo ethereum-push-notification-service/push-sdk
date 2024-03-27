@@ -156,6 +156,7 @@ const FileMessage = styled.div`
 
 const TextMessage = styled.p`
   word-wrap: break-word;
+  word-break: break-word;
   padding: 0 45px 6px 4px;
   text-align: left;
   font-weight: 400;
@@ -190,6 +191,8 @@ const ReceivedMessage = styled.div`
   box-sizing: border-box;
   position: relative;
   max-width: 250px;
+  word-wrap: break-word;
+  word-break: break-word;
   padding: ${(props: any): string => props.padding || '12px 15px 12px 11px'};
   background: ${(props: any): string => props.theme.bgColorPrimary || '#ffffff'};
   text-align: left;
@@ -206,6 +209,8 @@ const SenderMessage = styled.div`
   position: relative;
   max-width: 250px;
   text-align: left;
+  word-wrap: break-word;
+  word-break: break-word;
   padding: ${(props: any): string => props.padding || '12px 15px 12px 11px'};
   background: ${(props: any): string => props.theme.bgColorSecondary || '#ca599b'};
   border: ${(props) => props.theme.border};

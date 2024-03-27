@@ -199,7 +199,7 @@ const customTheme: INotificationItemTheme = {...notificationLightTheme,...{
 <br/>
 
 #### List of all theme variables
-![Notification SDK Diagram](https://github.com/ethereum-push-notification-service/push-sdk/assets/42746736/bed4504a-0051-45f8-a57c-c083e4f2ae95)
+![Notification SDK Diagram](https://github.com/push-protocol/push-sdk/assets/42746736/bed4504a-0051-45f8-a57c-c083e4f2ae95)
 
 
 <br/>

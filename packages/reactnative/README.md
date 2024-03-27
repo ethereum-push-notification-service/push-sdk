@@ -297,7 +297,7 @@ const res = await updateGroup({
 
 ## Other Features
 
-All the remaining features of the `restapi` SDK are available in a similar manner to the `restapi` package. You can read more about them <a href="https://github.com/ethereum-push-notification-service/push-sdk/blob/main/packages/restapi/README.md">HERE</a>
+All the remaining features of the `restapi` SDK are available in a similar manner to the `restapi` package. You can read more about them <a href="https://github.com/push-protocol/push-sdk/blob/main/packages/restapi/README.md">HERE</a>
 
 These functions can be accessed by simply importing the `PushApi` object from the `@pushprotocol/react-native-sdk` package.
 
@@ -316,7 +316,7 @@ const response = await PushApi.chat.getGroupByName({
 - **[Docs](https://docs.push.org/developers/)** For comprehensive documentation.
 - **[Blog](https://medium.com/push-protocol)** To learn more about our partners, new launches, etc.
 - **[Discord](discord.gg/pushprotocol)** for support and discussions with the community and the team.
-- **[GitHub](https://github.com/ethereum-push-notification-service)** for source code, project board, issues, and pull requests.
+- **[GitHub](https://github.com/push-protocol)** for source code, project board, issues, and pull requests.
 - **[Twitter](https://twitter.com/pushprotocol)** for the latest updates on the product and published blogs.
 
 ## Contributing
@@ -327,7 +327,7 @@ Push Protocol is an open source Project. We firmly believe in a completely trans
 - Feature Request: Please submit a feature request if you have an idea or discover a capability that would make development simpler and more reliable.
 - Documentation Request: If you're reading the Push documentation and believe that we're missing something, please create a docs request.
 
-Read how you can contribute <a href="https://github.com/ethereum-push-notification-service/push-sdk/blob/main/contributing.md">HERE</a>
+Read how you can contribute <a href="https://github.com/push-protocol/push-sdk/blob/main/contributing.md">HERE</a>
 
 Not sure where to start? Join our discord and we will help you get started!
 
@@ -335,4 +335,4 @@ Not sure where to start? Join our discord and we will help you get started!
 
 ## License
 
-Check out our License <a href='https://github.com/ethereum-push-notification-service/push-sdk/blob/main/license-v1.md'>HERE </a>
+Check out our License <a href='https://github.com/push-protocol/push-sdk/blob/main/license-v1.md'>HERE </a>

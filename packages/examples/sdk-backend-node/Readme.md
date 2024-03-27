@@ -18,7 +18,7 @@ Through these examples, you'll see how these features can be successfully implem
 Embark on your journey with this project by cloning the repository and installing the dependencies:
 
 ```bash
-git clone https://github.com/ethereum-push-notification-service/push-sdk.git
+git clone https://github.com/push-protocol/push-sdk.git
 cd push-sdk
 yarn install
 ```

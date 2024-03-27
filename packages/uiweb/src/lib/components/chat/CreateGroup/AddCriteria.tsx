@@ -27,7 +27,7 @@ import BSCSvg from '../../../icons/bsc.svg';
 import FuseSvg from '../../../icons/fuse.svg';
 
 import OptimismSvg from '../../../icons/optimisim.svg';
-import { BLOCKCHAIN_NETWORK, device } from '../../../config';
+import { BLOCKCHAIN_NETWORK, ENV, device } from '../../../config';
 import { GUILD_COMPARISON_OPTIONS, INVITE_CHECKBOX_LABEL } from '../constants';
 import {
   CATEGORY,
@@ -252,14 +252,19 @@ const AddCriteria = ({
       icon: FuseSvg,
       function: () => setSelectedChainValue(5),
     },
-    {
+   
+  ];
+  if(env !== ENV.PROD)
+  {
+
+    dropdownChainsValues.push( {
       id: 6,
       value: BLOCKCHAIN_NETWORK[env].BERACHAIN,
       title: 'Berachain',
       icon: BerachainSvg,
-      function: () => setSelectedChainValue(46),
-    },
-  ];
+      function: () => setSelectedChainValue(6),
+    } as DropdownValueType)
+  }
 
   const onQuantityChange = (e: any) => {
     setQuantity({ ...quantity, value: e.target.value });

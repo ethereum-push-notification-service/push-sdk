@@ -14,7 +14,7 @@ const ChatViewComponentTest = () => {
     <div>
       <h2>Chat View Test page</h2>
     
-      {/* <CreateGroupModal onClose={()=>{console.log('in close')}} /> */}
+      <CreateGroupModal onClose={()=>{console.log('in close')}} />
       <ChatViewComponentCard>
       {/* <CreateGroupModal onClose={()=>{console.log('in close')}}  modalBackground={MODAL_BACKGROUND_TYPE.OVERLAY} modalPositionType={MODAL_POSITION_TYPE.RELATIVE}/> */}
         <ChatView 

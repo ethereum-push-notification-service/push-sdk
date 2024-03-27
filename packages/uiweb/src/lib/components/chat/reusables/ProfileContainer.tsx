@@ -50,7 +50,7 @@ export const ProfileContainer = ({
           src={member?.image}
         />
       </Section>
-      <Section flexDirection="column" alignItems="start" gap="5px" >
+      <Section flexDirection="column" alignItems="start" gap="5px"  whiteSpace='nowrap' >
         {!!member?.web3Name && (
           <Span
             fontSize={customStyle?.fontSize ?? '18px'}
@@ -92,6 +92,7 @@ export const ProfileContainer = ({
                     theme.textColor?.modalSubHeadingText
               }
               position="relative"
+              whiteSpace='nowrap'
             >
               {member.wallet}
             </Span>

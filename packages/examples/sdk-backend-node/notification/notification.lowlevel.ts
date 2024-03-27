@@ -96,7 +96,7 @@ export const runNotificaitonsLowLevelUseCases = async (): Promise<void> => {
     await PushAPI_channels_unsubscribe();
 
     // IMPORTANT: VARIOUS OTHER NOTIFICATIONS FORMAT SUPPORTED
-    // EXAMPLES HERE: https://github.com/ethereum-push-notification-service/push-sdk/blob/main/packages/restapi/README.md
+    // EXAMPLES HERE: https://github.com/push-protocol/push-sdk/blob/main/packages/restapi/README.md
     console.log(
       'PushAPI.payloads.sendNotification() [Direct Payload, Single Recipient]'
     );

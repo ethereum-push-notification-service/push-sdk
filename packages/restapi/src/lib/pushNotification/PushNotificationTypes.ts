@@ -127,12 +127,7 @@ export type ChannelOptions = {
   raw: boolean;
 };
 
-export type ChannelListOptions = {
-  page?: number;
-  limit?: number;
-  sort?: ChannelListSortType;
-  order?: ChannelListOrderType;
-};
+
 
 export enum ChannelListType {
   ALL = 'all',
@@ -144,7 +139,20 @@ export enum ChannelListSortType {
   SUBSCRIBER = 'subscribers',
 }
 
+
+
+export type ChannelListOptions = {
+  page?: number;
+  limit?: number;
+  sort?: ChannelListSortType;
+  order?: ChannelListOrderType;
+};
+
+
+
+
+
 export enum ChannelListOrderType {
   ASCENDING = 'asc',
   DESCENDING = 'desc',
-}
+};

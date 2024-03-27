@@ -23,6 +23,7 @@ type SpanStyleProps = {
   maxWidth?: string;
   width?: string;
   cursor?: string;
+  whiteSpace?:string;
 };
 
 export const Span = styled.span<SpanStyleProps>`
@@ -49,6 +50,7 @@ export const Span = styled.span<SpanStyleProps>`
   width: ${(props) => props.width || 'auto'};
   z-index: ${(props) => props.zIndex || 'auto'};
   max-width: ${(props) => props.maxWidth || 'initial'};
+  white-space: ${(props) => props.whiteSpace || 'normal'};
 `;
 
 type AnchorStyleProps = {
@@ -132,6 +134,7 @@ type SectionStyleProps = {
   borderWidth?: string;
   borderRadius?: string;
   flex?: string;
+  whiteSpace?:string;
   zIndex?: string;
 };
 
@@ -169,6 +172,8 @@ export const Section = styled.div<SectionStyleProps>`
   border-color: ${(props) => props.borderColor || 'initial'};
   border-style: ${(props) => props.borderStyle || 'initial'};
   z-index: ${(props) => props.zIndex || '0'};
+  white-space: ${(props) => props.whiteSpace || 'normal'};
+
 `;
 
 type ImageStyleProps = {
