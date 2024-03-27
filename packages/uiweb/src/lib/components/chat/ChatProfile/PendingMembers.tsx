@@ -44,6 +44,7 @@ type AcceptedMembersProps = {
   >;
   acceptedMembers: ChatMemberProfile[];
   chatId: string;
+  theme: IChatTheme;
 };
 
 const UPDATE_KEYS = {
@@ -89,7 +90,6 @@ export const PendingMembers = ({
     }));
     // eslint-disable-next-line no-use-before-define
   }, [isInViewportPending]);
-
   if (pendingMembers && pendingMembers.length) {
     return (
       <PendingRequestWrapper theme={theme}>
@@ -115,7 +115,8 @@ export const PendingMembers = ({
           maxHeight="10rem"
           overflow="hidden auto"
           justifyContent="start"
-          borderRadius="16px"
+          borderRadius="12px"
+          theme={theme}
         >
           {showPendingRequests &&
             pendingMembers &&
@@ -143,7 +144,7 @@ export const PendingMembers = ({
             ))}
           {pendingMemberPaginationData.loading && (
             <Section>
-              <Spinner size="20" />
+              <Spinner size="20" color={theme.spinnerColor}/>
             </Section>
           )}
           <div ref={pendingMemberPageRef} style={{ padding: '1px' }}></div>
@@ -160,6 +161,7 @@ export const AcceptedMembers = ({
   setAcceptedMemberPaginationData,
   acceptedMemberPaginationData,
   chatId,
+  theme,
 }: AcceptedMembersProps) => {
   const { account } = useChatData();
   const acceptedMemberPageRef = useRef<HTMLDivElement>(null);
@@ -302,7 +304,6 @@ export const AcceptedMembers = ({
   };
 
   useClickAway(dropdownRef, () => setSelectedMemberAddress(null));
-  console.debug(acceptedMembers);
   if (acceptedMembers && acceptedMembers.length) {
     return (
       <ProfileSection
@@ -311,6 +312,7 @@ export const AcceptedMembers = ({
         justifyContent="start"
         overflow="hidden auto"
         maxHeight="15rem"
+        theme={theme}
       >
         {acceptedMembers.map((item, index) => (
           <MemberProfileCard
@@ -332,7 +334,7 @@ export const AcceptedMembers = ({
         <div ref={acceptedMemberPageRef} style={{ padding: '1px' }}></div>
         {acceptedMemberPaginationData.loading && (
           <Section>
-            <Spinner size="20" />
+            <Spinner size="20" color={theme.spinnerColor} />
           </Section>
         )}
       </ProfileSection>
@@ -393,6 +395,16 @@ const Badge = styled.div`
   font-weight: 700;
 `;
 
-const ProfileSection = styled(Section)`
+const ProfileSection = styled(Section)<{ theme: IChatTheme }>`
   height: fit-content;
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-button {
+    height: 20px;
+  }
+  &::-webkit-scrollbar {
+    width: 0px;
+  }
 `;

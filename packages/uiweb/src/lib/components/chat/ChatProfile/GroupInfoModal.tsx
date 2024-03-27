@@ -449,6 +449,7 @@ const GroupInformation = ({
                 />
               )}
             <AcceptedMembers
+              theme={theme}
               acceptedMemberPaginationData={acceptedMemberPaginationData}
               setAcceptedMemberPaginationData={setAcceptedMemberPaginationData}
               acceptedMembers={groupMembers?.accepted}

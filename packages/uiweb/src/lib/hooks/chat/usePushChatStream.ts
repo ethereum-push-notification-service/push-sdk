@@ -68,6 +68,7 @@ export const usePushChatStream = () => {
 
     // Listen for group info
     stream?.on(CONSTANTS.STREAM.CHAT_OPS, (chatops: any) => {
+      console.debug(chatops)
          if (chatops.event === 'chat.group.update') {
           setGroupUpdateStream(chatops);
         }

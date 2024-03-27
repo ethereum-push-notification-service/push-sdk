@@ -11,6 +11,7 @@ export const useCreateGatedGroup = () => {
   const createGatedGroup = useCallback(
     async (groupInfoType:GrouInfoType,rules: any) => {
       setLoading(true);
+      console.debug('user in create group ',user)
       try {
         const payload = {
           description:groupInfoType.groupDescription,

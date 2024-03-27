@@ -179,7 +179,7 @@ export const AddWallets = ({
         <ModalConfirmButton
           onClick={() => onSubmit()}
           isLoading={isLoading}
-          memberListCount={memberList?.length > 0}
+          // memberListCount={memberList?.length > 0}
           theme={theme}
         >
           {!isLoading  ? submitButtonTitle : ''}{' '}
@@ -246,15 +246,11 @@ const ModalConfirmButton = styled.button<
   margin: 60px 0 0 0;
   width: 197px;
   background: ${(props) =>
-    props.memberListCount
-      ? props.theme.backgroundColor!.buttonBackground
-      : props.theme.backgroundColor!.buttonDisableBackground};
+    props.theme.backgroundColor!.buttonBackground};
   color: ${(props) =>
-    props.memberListCount
-      ? props.theme.textColor!.buttonText
-      : props.theme.textColor!.buttonDisableText};
+    props.theme.textColor!.buttonText};
   border: ${(props) =>
-    props.memberListCount ? 'none' : props.theme.border!.modal};
+    'none'};
   min-width: 50%;
   box-sizing: border-box;
   cursor: pointer;

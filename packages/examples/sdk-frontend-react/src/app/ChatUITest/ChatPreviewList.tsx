@@ -158,7 +158,7 @@ const ChatPreviewListTest = () => {
             onLoading={(loadingData) => { console.log("loading data: ", loadingData) }}
             onPaging={(chats) => { console.log("paging chats are: ", chats) }}
             onPreload={(chats) => { console.log("preload chats are: ", chats) }}
-            prefillChatPreviewList={prefill}
+            // prefillChatPreviewList={prefill}
           // listType='SEARCH'
           // searchParamter='0x56A734ba4C7c7b117774C9aAcCEf521eBE66d65b'
         />

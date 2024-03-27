@@ -99,7 +99,7 @@ export const ChatPreviewList: React.FC<IChatPreviewListProps> = (
   // set ref
   const listInnerRef = useRef<HTMLDivElement>(null);
 
-  const { chatStream, chatRequestStream, chatAcceptStream } =
+  const { chatStream, chatRequestStream, chatAcceptStream, groupCreateStream } =
     usePushChatStream();
   // Helper Functions
 
@@ -150,6 +150,23 @@ export const ChatPreviewList: React.FC<IChatPreviewListProps> = (
       setBadge(item!, 0);
     });
   };
+
+  //Transform group creation stream
+  const transformGroupCreationStream: (item: any) => void = async (item: any) => {
+    const transformedItem: IChatPreviewPayload = {
+      chatId:item?.chatId,
+      chatPic: item?.meta.image,
+      chatParticipant: item?.meta.name,
+      chatGroup: true,
+      chatTimestamp:  undefined,
+      chatMsg: {
+        messageType: '',
+        messageContent: '',
+      }
+    }
+    addChatItems([transformedItem]);
+  }
+
 
   // Transform stream message
   const transformStreamMessage: (item: any) => void = async (item: any) => {
@@ -566,6 +583,18 @@ export const ChatPreviewList: React.FC<IChatPreviewListProps> = (
       }
     }
   }, [chatStream]);
+
+  useEffect(() => {
+    if (
+      Object.keys(groupCreateStream).length > 0 &&
+      groupCreateStream.constructor === Object
+    ) {
+      if (options.listType === CONSTANTS.CHAT.LIST_TYPE.CHATS) {
+        transformGroupCreationStream(groupCreateStream);
+      }
+    }
+  }, [groupCreateStream]);
+
   useEffect(() => {
     if (
       Object.keys(chatRequestStream).length > 0 &&
