@@ -1,6 +1,6 @@
-import { IChatPreviewPayload, IMessagePayload, User } from '../exportedTypes';
+import { Group, IChatPreviewPayload, IMessagePayload, User } from '../exportedTypes';
 import { ethers } from 'ethers';
-import { IFeeds, IUser, ParticipantStatus } from '@pushprotocol/restapi';
+import { IFeeds, IMessageIPFSWithCID, IUser, ParticipantStatus } from '@pushprotocol/restapi';
 import { getAddress, walletToPCAIP10 } from '../../../helpers';
 import { Env,  } from '@pushprotocol/restapi';
 import moment from 'moment';
@@ -104,12 +104,13 @@ export const checkIfMember = (chatFeed: IFeeds, account: string) => {
   return isMember;
 };
 
-export const checkIfAccessVerifiedGroup = (chatFeed: IFeeds) => {
+export const checkIfAccessVerifiedGroup = (groupInfo: Group) => {
   let isRules = false;
   if (
-    chatFeed?.groupInformation?.rules &&
-    (chatFeed?.groupInformation?.rules?.entry ||
-      chatFeed?.groupInformation?.rules?.chat)
+    groupInfo &&
+    groupInfo.rules &&
+    (groupInfo.rules?.entry ||
+      groupInfo.rules?.chat)
   ) {
     isRules = true;
   }
@@ -208,7 +209,7 @@ export const generateRandomNonce: () => string = () => {
       chatPic: null, // for now, we don't have a way to get pfp from stream
       chatParticipant: item.meta.group
         ? null // we take from fetching info
-        : (item?.event === 'chat.request')? item.from: item.to[0],
+        : (item?.event === 'chat.request')?item?.origin == 'self'?item.to[0] :item.from: item.to[0],
       chatGroup: item.meta.group,
       chatTimestamp: Number(item.timestamp),
       chatMsg: {
@@ -219,3 +220,36 @@ export const generateRandomNonce: () => string = () => {
 
     return transformedItem;
   };
+
+  export const checkIfNewRequest = (item:any,chatId:string) => {
+    if(item?.origin == 'self')
+     return (walletToPCAIP10(chatId) === walletToPCAIP10(item?.to[0]));
+     if(item?.origin == 'other')
+     return (walletToPCAIP10(chatId) === walletToPCAIP10(item?.from));
+    return false;
+  }
+
+  export  const transformStreamToIMessageIPFSWithCID: (
+    item: any
+  ) => IMessageIPFSWithCID = (item: any) =>{
+
+    const transformedItem :IMessageIPFSWithCID = {
+      fromCAIP10: item?.raw?.fromCAIP10,
+      toCAIP10: item?.raw?.toCAIP10,
+      fromDID: item?.raw?.fromDID,
+      toDID: item?.raw?.toDID,
+      messageType: item?.message?.type,
+      messageObj: {content:item?.message?.content},
+      sigType: item?.raw?.sigType,
+      link:  item?.raw?.previousReference,
+      timestamp: parseInt(item?.timestamp),
+      encType: item?.raw?.encType,
+      encryptedSecret: item?.raw?.encryptedSecret,
+      cid: item?.reference,
+      messageContent:  item?.message?.content,
+      signature: item?.raw?.signature,
+      verificationProof:  item?.raw?.verificationProof,
+    }
+    return transformedItem;
+
+  }

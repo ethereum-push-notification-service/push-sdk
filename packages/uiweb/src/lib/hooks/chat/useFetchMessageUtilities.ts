@@ -9,8 +9,9 @@ import { useChatData } from './useChatData';
 
 
   interface HistoryMessagesParams {
-    threadHash: string;
+    chatId: string;
     limit?: number;
+    reference?:string| null;
   }
   interface FetchLatestMessageParams {
     chatId: string;
@@ -71,19 +72,12 @@ const useFetchMessageUtilities
     }
   }, [user,account,env]);
 
-  const historyMessages = useCallback(async ({threadHash,limit = 10,}:HistoryMessagesParams) => {
+  const historyMessages = useCallback(async ({chatId,reference=null,limit = 10,}:HistoryMessagesParams) => {
 
     setHistoryLoading(true);
     try {
-        const chatHistory:IMessageIPFS[] = await PushAPI.chat.history({
-            threadhash: threadHash,
-            account:account ? account : '0xeeE5A266D7cD954bE3Eb99062172E7071E664023',
-            toDecrypt: pgpPrivateKey ? true : false,
-            pgpPrivateKey: String(pgpPrivateKey),
-            limit: limit,
-            env: env
-          });
-          chatHistory.reverse();
+        const chatHistory = await user?.chat.history(chatId,{limit,reference});
+
        return chatHistory;
     } catch (error: Error | any) {
       setHistoryLoading(false);

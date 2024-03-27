@@ -99,4 +99,12 @@ export const CRITERIA_TYPE = {
   
   export type CriteriaType = keyof typeof CRITERIA_TYPE;
 
+  export interface ChatInfoResponse {
+    chatId:string;
+    meta: {
+      group: boolean;
+    };
+    participants?: Array<string>;
+    list: string;
+  }
 export * from './tokenGatedGroupCreationType'

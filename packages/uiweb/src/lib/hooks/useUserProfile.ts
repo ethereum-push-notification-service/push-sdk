@@ -23,6 +23,7 @@ const useUserProfile = () => {
          userReadOnly = await user!.info({ overrideAccount: profileId });
         else
          userReadOnly = await user!.info();
+
         return userReadOnly;
       } catch (error) {
         console.log(error);

@@ -74,7 +74,6 @@ export const resolveNewEns = async (
 ) => {
   const walletLowercase = pCAIP10ToWallet(address).toLowerCase();
   const checksumWallet = ethers.utils.getAddress(walletLowercase);
-
   // let provider = ethers.getDefaultProvider('mainnet');
   // if (
   //   window.location.hostname == 'app.push.org' ||
@@ -100,7 +99,6 @@ export const resolveNewEns = async (
       } else {
         try {
           const udResolver = getUdResolver(env);
-    
           // attempt reverse resolution on provided address
           const udName = await udResolver.reverse(checksumWallet);
           if (udName) {

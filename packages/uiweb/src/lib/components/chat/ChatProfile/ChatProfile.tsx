@@ -26,7 +26,7 @@ import {
   allowedNetworks,
   device,
 } from '../../../config';
-import { getAddress, resolveNewEns, shortenText } from '../../../helpers';
+import { getAddress, pCAIP10ToWallet, resolveNewEns, shortenText, walletToPCAIP10 } from '../../../helpers';
 import { formatAddress, isValidETHAddress } from '../helpers/helper';
 import PublicChatIcon from '../../../icons/Public-Chat.svg';
 import GreyImage from '../../../icons/greyImage.png';
@@ -34,6 +34,8 @@ import InfoIcon from '../../../icons/infodark.svg';
 import VerticalEllipsisIcon from '../../../icons/VerticalEllipsis.svg';
 import { TokenGatedSvg } from '../../../icons/TokenGatedSvg';
 import useUserProfile from '../../../hooks/useUserProfile';
+import { ChatInfoResponse } from '../types';
+import useFetchChat from '../../../hooks/chat/useFetchChat';
 
 export const ChatProfile: React.FC<IChatProfile> = ({
   chatId,
@@ -49,7 +51,9 @@ export const ChatProfile: React.FC<IChatProfile> = ({
 
   // const [isGroup, setIsGroup] = useState<boolean>(false);
   const [options, setOptions] = useState(false);
-  const [chatInfo, setChatInfo] = useState<IUser | null>();
+  const [formattedChatId, setFormattedChatId] = useState<string>('');
+  const [chatInfo, setChatInfo] = useState<ChatInfoResponse | null>(null);
+  const [userInfo, setUserInfo] = useState<IUser | null>();
   const [groupInfo, setGroupInfo] = useState<Group | null>();
   const [web3Name, setWeb3Name] = useState<string | null>(null);
   const isMobile = useMediaQuery(device.tablet);
@@ -59,6 +63,8 @@ export const ChatProfile: React.FC<IChatProfile> = ({
   );
   const DropdownRef = useRef(null);
   const [modal, setModal] = useState(false);
+  const { fetchChat } = useFetchChat();
+
 
   useClickAway(DropdownRef, () => {
     setOptions(false);
@@ -69,54 +75,75 @@ export const ChatProfile: React.FC<IChatProfile> = ({
   };
 
   const fetchProfileData = async () => {
-    let formattedChatId;
-    if (chatId.includes('eip155:')) {
-      formattedChatId = chatId.replace('eip155:', '');
-    } else if (chatId.includes('.')) {
-      formattedChatId = (await getAddress(chatId, env))!;
-    } else formattedChatId = chatId;
-    if (isValidETHAddress(formattedChatId)) {
-      const ChatProfile = await fetchUserProfile({
-        profileId: formattedChatId,
-        env,
-        user,
-      });
-      const result = await resolveNewEns(formattedChatId, provider, env);
+   
+    if (chatInfo && !chatInfo?.meta?.group && chatInfo?.participants && account) {
+      const recipient = pCAIP10ToWallet(chatInfo?.participants.find((address)=>address != walletToPCAIP10(account)) || formattedChatId);
+      const ChatProfile = await fetchUserProfile({ profileId: recipient, env,user });
+
+      // const ChatProfile = await fetchUserProfile({
+      //   profileId: formattedChatId,
+      //   env,
+      //   user,
+      // });
+      const result = await resolveNewEns(recipient, provider, env);
       setWeb3Name(result);
-      setChatInfo(ChatProfile);
+      setUserInfo(ChatProfile);
       setGroupInfo(null);
       // setIsGroup(false);
-    } else {
+    } else if (chatInfo && chatInfo?.meta?.group) {
       const GroupProfile = await getGroupByIDnew({ groupId: formattedChatId });
       setGroupInfo(GroupProfile);
-      setChatInfo(null);
+      setUserInfo(null);
       setWeb3Name(null);
-      // setIsGroup(true);
     }
   };
 
   const getImage = () => {
-    if (chatInfo || groupInfo) {
+    if (userInfo || groupInfo) {
       return Object.keys(groupInfo || {}).length
         ? groupInfo?.groupImage ?? GreyImage
-        : chatInfo?.profile?.picture ??
-            createBlockie?.(chatId)?.toDataURL()?.toString();
+        : userInfo?.profile?.picture ??
+            createBlockie?.(formattedChatId)?.toDataURL()?.toString();
     } else {
-      return createBlockie?.(chatId)?.toDataURL()?.toString();
+      return createBlockie?.(formattedChatId)?.toDataURL()?.toString();
     }
   };
 
   const getProfileName = () => {
     return Object.keys(groupInfo || {}).length
       ? shortenText(groupInfo?.chatId || '', 6, true)
-      : chatInfo
-      ? shortenText(chatInfo.did?.split(':')[1] ?? '', 6, true)
+      : userInfo
+      ? shortenText(userInfo.did?.split(':')[1] ?? '', 6, true)
       : shortenText(chatId?.split(':')[1], 6, true);
   };
+
   useEffect(() => {
-    if (!chatId) return;
-    fetchProfileData();
+ 
+    (async () => {
+      if (!user) return;
+      if(chatId){
+        let formattedChatId;
+    if (chatId.includes('eip155:')) {
+      formattedChatId = chatId.replace('eip155:', '');
+    } else if (chatId.includes('.')) {
+      formattedChatId = (await getAddress(chatId, env))!;
+     
+    } else formattedChatId = chatId;
+    setFormattedChatId(formattedChatId);
+        const chat = await fetchChat({ chatId: formattedChatId });
+        if (Object.keys(chat || {}).length) {
+          setChatInfo(chat as ChatInfoResponse);
+        }
+  
+      }
+     
+    })();
   }, [chatId, account, user]);
+  useEffect(() => {
+    (async () => {
+     await   fetchProfileData(); 
+    })();
+  }, [chatInfo]);
 
   if (chatId) {
     return (
@@ -142,9 +169,9 @@ export const ChatProfile: React.FC<IChatProfile> = ({
               wallet: getProfileName() as string,
               image: getImage(),
               web3Name: web3Name?web3Name:groupInfo?.groupName,
-              completeWallet:chatInfo?.wallets??groupInfo?.chatId
+              completeWallet:userInfo?.wallets??groupInfo?.chatId
             }}
-            copy={!!chatInfo|| !!groupInfo}
+            copy={!!userInfo|| !!groupInfo}
             customStyle={{
               fontSize: theme?.fontWeight?.chatProfileText,
               textColor: theme?.textColor?.chatProfileText,

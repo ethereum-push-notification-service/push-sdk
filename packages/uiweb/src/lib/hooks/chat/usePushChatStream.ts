@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { CONSTANTS, PushAPI, SignerType } from '@pushprotocol/restapi';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ENV } from '../../config';
 import { useChatData } from './useChatData';
 
@@ -27,6 +27,9 @@ export const usePushChatStream = () => {
   const [groupCreateStream, setGroupCreateStream] = useState<any>({}); // to track if group is created
 
   const [groupUpdateStream, setGroupUpdateStream] = useState<any>({}); //group updation stream
+
+
+
   const attachListenersAndConnect = async (stream: any) => {
     stream?.on(CONSTANTS.STREAM.CONNECT, (err: Error) => {
         console.debug(' stream connected .........',err)
@@ -40,28 +43,37 @@ export const usePushChatStream = () => {
 
     //Listen for chat messages, your message, request, accept, rejected,
     stream?.on(CONSTANTS.STREAM.CHAT, (message: any) => {
-      console.debug(message);
+   
+
       if (message.event === 'chat.request') {
+        dispatchEvent(new CustomEvent("chatRequestStream", {detail:message}));
         setChatRequestStream(message);
       } else if (message.event === 'chat.accept') {
+        dispatchEvent(new CustomEvent("chatAcceptStream", {detail:message}));
         setChatAcceptStream(message);
       } else if (message.event === 'chat.reject') {
+        dispatchEvent(new CustomEvent("chatRejectStream", {detail:message}));
         setChatRejectStream(message);
       }
       else if (message.event === 'chat.group.participant.remove') {
+        dispatchEvent(new CustomEvent("participantRemoveStream", {detail:message}));
         setParticipantRemoveStream(message);
       }
       else if (message.event === 'chat.group.participant.leave') {
+        dispatchEvent(new CustomEvent("participantLeaveStream", {detail:message}));
         setParticipantLeaveStream(message);
       }
       else if (message.event === 'chat.group.participant.join') {
+        dispatchEvent(new CustomEvent("participantJoinStream", {detail:message}));
         setParticipantJoinStream(message);
       }
       else if (message.event === 'chat.group.participant.role'){
+        dispatchEvent(new CustomEvent("participantRoleChangeStream", {detail:message}));
         setParticipantRoleChangeStream(message);
       }
    
        else if (message.event === 'chat.message') {
+        dispatchEvent(new CustomEvent("chatStream", {detail:message}));
         setChatStream(message);
       }
     });
@@ -69,9 +81,11 @@ export const usePushChatStream = () => {
     // Listen for group info
     stream?.on(CONSTANTS.STREAM.CHAT_OPS, (chatops: any) => {
          if (chatops.event === 'chat.group.update') {
+          dispatchEvent(new CustomEvent("groupUpdateStream", {detail:chatops}));
           setGroupUpdateStream(chatops);
         }
         else if (chatops.event === 'chat.group.create') {
+          dispatchEvent(new CustomEvent("groupCreateStream", {detail:chatops}));
           setGroupCreateStream(chatops);
         }
         
@@ -79,6 +93,21 @@ export const usePushChatStream = () => {
 
     console.debug('stream listeners attached');
   };
+
+//   useEffect(()=>{
+
+// // return () => {
+// //   setChatStream({});
+// // };
+//   },[chatStream])
+
+  // useEffect(()=>{
+  //   console.debug('resetting chatStream')
+    
+  //   return () => {
+  //     setChatStream(null);
+  //   };
+  //     },[])
 
   /**
    * Whenever the requisite params to create a connection object change
@@ -132,7 +161,6 @@ export const usePushChatStream = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, env, account]);
-
   return {
     chatStream,
     chatRequestStream,

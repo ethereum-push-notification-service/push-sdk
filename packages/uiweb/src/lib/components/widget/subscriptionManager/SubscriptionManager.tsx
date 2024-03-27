@@ -67,7 +67,7 @@ export const SubscriptionManager: React.FC<ISubscriptionManagerProps> = (
 
   const { fetchUserSubscriptions, userSubscriptionLoading,setUserSubscriptionLoading } =
     useManageSubscriptionsUtilities();
-
+console.debug(userSubscription)
   const handleNext = () => {
     if(activeComponent === SUBSCRIPTION_MANAGER_STEP_KEYS.MANAGE_NOTIFICATIONS)
     {
@@ -152,7 +152,6 @@ export const SubscriptionManager: React.FC<ISubscriptionManagerProps> = (
     }
   };
   return (
-    <>
     <Modal
       clickawayClose={onClose}
       modalBackground={modalBackground}
@@ -196,7 +195,6 @@ export const SubscriptionManager: React.FC<ISubscriptionManagerProps> = (
 
       <ToastContainer />
     </Modal>
-    </>
   );
 };
 

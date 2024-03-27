@@ -24,7 +24,11 @@ interface fetchMembersCountParams {
 
 const useGroupMemberUtilities = () => {
   const [error, setError] = useState<string>();
+  const [joinError, setJoinError] = useState<string>();
+
   const [loading, setLoading] = useState<boolean>(false);
+  const [joinLoading, setJoinLoading] = useState<boolean>(false);
+
   const { account, env, user } = useChatData();
 
 
@@ -51,8 +55,8 @@ const useGroupMemberUtilities = () => {
     async ({ chatId ,accountId }: fetchMemberStatusParams):Promise<ParticipantStatus | undefined>  => {
       setLoading(true);
       try {
-        console.log(chatId,accountId,user)
         const response = await user?.chat.group.participants.status(chatId,accountId);
+        console.debug(response)
           setLoading(false);
         return response;
       } catch(error: Error | any) {
@@ -82,7 +86,24 @@ const useGroupMemberUtilities = () => {
     [user, env]
   )
 
-  return { error, loading, fetchMembers,fetchMemberStatus,fetchMembersCount };
+  const joinGroup = useCallback(
+    async ({ chatId  }: fetchMembersCountParams) => {
+      setJoinLoading(true);
+      try {
+        const response = await user?.chat.group.join(chatId);
+         setJoinLoading(false);
+
+        return response;
+      } catch(error: Error | any) {
+        console.log("err", error);
+         setJoinLoading(false);
+        setJoinError(error.message);
+        return error.message;
+      }
+    },
+    [user, env, account]
+  )
+  return { error, loading, fetchMembers,fetchMemberStatus,fetchMembersCount,joinGroup,joinLoading,joinError };
 };
 
 export default useGroupMemberUtilities;

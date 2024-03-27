@@ -33,17 +33,22 @@ import {
   PENDING_MEMBERS_LIMIT,
 } from '../constants';
 import { getRuleInfo } from '../helpers/getRulesToCondtionArray';
+import { Group } from '../exportedTypes';
 import {
-  Group,
-
-} from '../exportedTypes';
-import { MODAL_BACKGROUND_TYPE, MODAL_POSITION_TYPE,ModalBackgroundType,ModalPositionType } from '../../../types';
+  MODAL_BACKGROUND_TYPE,
+  MODAL_POSITION_TYPE,
+  ModalBackgroundType,
+  ModalPositionType,
+} from '../../../types';
 
 import { TokenGatedSvg } from '../../../icons/TokenGatedSvg';
 import { GROUP_ROLES } from '../types';
 import useGroupMemberUtilities from '../../../hooks/chat/useGroupMemberUtilities';
 import useChatProfile from '../../../hooks/chat/useChatProfile';
-import { resolvePromisesSeq, transformIUserToChatMemberProfile } from '../helpers';
+import {
+  resolvePromisesSeq,
+  transformIUserToChatMemberProfile,
+} from '../helpers';
 import useUserProfile from '../../../hooks/useUserProfile';
 
 export interface MemberPaginationData {
@@ -245,7 +250,7 @@ type GroupInfoModalProps = {
   theme: IChatTheme;
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
   groupInfo: Group;
-  setGroupInfo: React.Dispatch<React.SetStateAction<Group|null>>;
+  setGroupInfo: React.Dispatch<React.SetStateAction<Group | null>>;
   groupInfoModalBackground?: ModalBackgroundType;
   groupInfoModalPositionType?: ModalPositionType;
 };
@@ -270,7 +275,7 @@ const GroupInformation = ({
   setShowAddMoreWalletModal,
   membersCount,
 }: GroupSectionProps) => {
-  const { account,user } = useChatData();
+  const { account, user } = useChatData();
   const [accountStatus, setAccountStatus] = useState<ParticipantStatus | null>(
     null
   );
@@ -403,7 +408,8 @@ const GroupInformation = ({
 
       {accountStatus?.role === GROUP_ROLES.ADMIN.toLowerCase() &&
         groupMembers?.accepted &&
-        groupMembers?.accepted?.length < (groupInfo?.isPublic ? 25000 : 5000) && (
+        groupMembers?.accepted?.length <
+          (groupInfo?.isPublic ? 25000 : 5000) && (
           <AddWalletContainer
             theme={theme}
             onClick={() => setShowAddMoreWalletModal(true)}
@@ -505,76 +511,140 @@ export const GroupInfoModal = ({
     loading: false,
   });
   const { fetchMembers, loading: membersLoading } = useGroupMemberUtilities();
-  const {user} = useChatData();
+  const { user } = useChatData();
   const { addMember } = useUpdateGroup();
   const { fetchMembersCount } = useGroupMemberUtilities();
   const { fetchUserProfile } = useUserProfile();
 
-  const {
-    chatAcceptStream,
-    chatRejectStream,
-    participantRemoveStream,
-    participantLeaveStream,
-    participantJoinStream,
-    groupUpdateStream,
-    participantRoleChangeStream,
-  } = usePushChatStream();
+  //hack for stream not working
+  const [chatAcceptStream, setChatAcceptStream] = useState<any>({}); // to track any new messages
+  const [chatRejectStream, setChatRejectStream] = useState<any>({}); // to track any rejected request
+
+  const [participantRoleChangeStream, setParticipantRoleChangeStream] =
+    useState<any>({}); // to track if a participant role is changed in a  group
+
+  const [participantRemoveStream, setParticipantRemoveStream] = useState<any>(
+    {}
+  ); // to track if a participant is removed from group
+  const [participantLeaveStream, setParticipantLeaveStream] = useState<any>({}); // to track if a participant leaves a group
+  const [participantJoinStream, setParticipantJoinStream] = useState<any>({}); // to track if a participant joins a group
+
+  const [groupUpdateStream, setGroupUpdateStream] = useState<any>({});
+
+  //event listners
+  usePushChatStream();
+  useEffect(() => {
+    window.addEventListener('chatAcceptStream', (e: any) =>
+      setChatAcceptStream(e.detail)
+    );
+    window.addEventListener('chatRejectStream', (e: any) =>
+      setChatRejectStream(e.detail)
+    );
+    window.addEventListener('participantRoleChangeStream', (e: any) =>
+      setParticipantRoleChangeStream(e.detail)
+    );
+    window.addEventListener('participantRemoveStream', (e: any) =>
+      setParticipantRemoveStream(e.detail)
+    );
+    window.addEventListener('participantLeaveStream', (e: any) =>
+      setParticipantLeaveStream(e.detail)
+    );
+    window.addEventListener('participantJoinStream', (e: any) =>
+      setParticipantJoinStream(e.detail)
+    );
+    window.addEventListener('groupUpdateStream', (e: any) =>
+      setGroupUpdateStream(e.detail)
+    );
+    return () => {
+      window.removeEventListener('chatAcceptStream', (e: any) =>
+        setChatAcceptStream(e.detail)
+      );
+      window.removeEventListener('chatRejectStream', (e: any) =>
+        setChatRejectStream(e.detail)
+      );
+      window.removeEventListener('participantRoleChangeStream', (e: any) =>
+        setParticipantRoleChangeStream(e.detail)
+      );
+      window.removeEventListener('participantRemoveStream', (e: any) =>
+        setParticipantRemoveStream(e.detail)
+      );
+      window.removeEventListener('participantLeaveStream', (e: any) =>
+        setParticipantLeaveStream(e.detail)
+      );
+      window.removeEventListener('participantJoinStream', (e: any) =>
+        setParticipantJoinStream(e.detail)
+      );
+      window.removeEventListener('groupUpdateStream', (e: any) =>
+        setGroupUpdateStream(e.detail)
+      );
+    };
+  }, []);
+
+  // const {
+  //   chatAcceptStream,
+  //   chatRejectStream,
+  //   participantRemoveStream,
+  //   participantLeaveStream,
+  //   participantJoinStream,
+  //   groupUpdateStream,
+  //   participantRoleChangeStream,
+  // } = usePushChatStream();
 
   //stream listeners
   useEffect(() => {
     if (
-      Object.keys(chatAcceptStream).length > 0 &&
+      Object.keys(chatAcceptStream || {}).length > 0 &&
       chatAcceptStream.constructor === Object
-    ) 
-    transformAcceptedRequest(chatAcceptStream);
+    )
+      transformAcceptedRequest(chatAcceptStream);
   }, [chatAcceptStream]);
   useEffect(() => {
     if (
-      Object.keys(chatRejectStream).length > 0 &&
+      Object.keys(chatRejectStream || {}).length > 0 &&
       chatRejectStream.constructor === Object
-    ) 
-    transformRejectedRequest(chatRejectStream);
+    )
+      transformRejectedRequest(chatRejectStream);
   }, [chatRejectStream]);
 
   useEffect(() => {
     if (
-      Object.keys(participantRemoveStream).length > 0 &&
+      Object.keys(participantRemoveStream || {}).length > 0 &&
       participantRemoveStream.constructor === Object
-    ) 
-    transformParticipantRemove(participantRemoveStream);
+    )
+      transformParticipantRemove(participantRemoveStream);
   }, [participantRemoveStream]);
   useEffect(() => {
     if (
-      Object.keys(participantLeaveStream).length > 0 &&
+      Object.keys(participantLeaveStream || {}).length > 0 &&
       participantLeaveStream.constructor === Object
-    ) 
-    transformParticipantLeave(participantLeaveStream);
+    )
+      transformParticipantLeave(participantLeaveStream);
   }, [participantLeaveStream]);
 
   useEffect(() => {
     (async () => {
       if (
-        Object.keys(participantJoinStream).length > 0 &&
+        Object.keys(participantJoinStream || {}).length > 0 &&
         participantJoinStream.constructor === Object
-      ) 
-     await transformParticipantJoin(participantJoinStream);
+      )
+        await transformParticipantJoin(participantJoinStream);
     })();
-   
   }, [participantJoinStream]);
+
   useEffect(() => {
     if (
-      Object.keys(groupUpdateStream).length > 0 &&
+      Object.keys(groupUpdateStream || {}).length > 0 &&
       groupUpdateStream.constructor === Object
-    ) 
-    transformGroupDetails(groupUpdateStream);
+    )
+      transformGroupDetails(groupUpdateStream);
   }, [groupUpdateStream]);
 
   useEffect(() => {
     if (
-      Object.keys(participantRoleChangeStream).length > 0 &&
+      Object.keys(participantRoleChangeStream || {}).length > 0 &&
       participantRoleChangeStream.constructor === Object
-    ) 
-    transformRoleChange(participantRoleChangeStream);
+    )
+      transformRoleChange(participantRoleChangeStream);
   }, [participantRoleChangeStream]);
   useEffect(() => {
     (async () => {
@@ -587,13 +657,12 @@ export const GroupInfoModal = ({
   //add dependencies
   useEffect(() => {
     (async () => {
-      if(Object.keys(groupInfo || {}).length){
+      if (Object.keys(groupInfo || {}).length) {
         setGroupMembers((prev) => ({ ...prev, loading: true }));
         await initialiseMemberPaginationData('pending', fetchPendingMembers);
         await initialiseMemberPaginationData('accepted', fetchAcceptedMembers);
         setGroupMembers((prev) => ({ ...prev, loading: false }));
       }
-    
     })();
   }, [groupInfo]);
 
@@ -622,7 +691,7 @@ export const GroupInfoModal = ({
   //convert fetchPendingMembers and fetchAcceptedMembers to single method and show errors
   const fetchPendingMembers = async (page: number): Promise<void> => {
     const fetchedPendingMembers = await fetchMembers({
-      chatId: groupInfo!.chatId ,
+      chatId: groupInfo!.chatId,
       page: page,
       limit: PENDING_MEMBERS_LIMIT,
       pending: true,
@@ -636,7 +705,7 @@ export const GroupInfoModal = ({
       ...prevMembers,
       pending: [
         ...prevMembers!.pending,
-        ...(fetchedPendingMembers?.members || [] as ChatMemberProfile[]),
+        ...(fetchedPendingMembers?.members || ([] as ChatMemberProfile[])),
       ]
         .slice()
         .filter(
@@ -644,8 +713,6 @@ export const GroupInfoModal = ({
             index === self.findIndex((t) => t.address === item.address)
         ),
     }));
-    
-     
   };
   const fetchAcceptedMembers = async (page: number): Promise<void> => {
     const fetchedAcceptedMembers = await fetchMembers({
@@ -654,7 +721,6 @@ export const GroupInfoModal = ({
       limit: ACCEPTED_MEMBERS_LIMIT,
     });
     if (!fetchedAcceptedMembers?.members.length)
-    
       setAcceptedMemberPaginationData((prev: MemberPaginationData) => ({
         ...prev,
         finishedFetching: true,
@@ -663,7 +729,7 @@ export const GroupInfoModal = ({
       ...prevMembers,
       accepted: [
         ...prevMembers!.accepted,
-        ...(fetchedAcceptedMembers?.members || [] as ChatMemberProfile[]),
+        ...(fetchedAcceptedMembers?.members || ([] as ChatMemberProfile[])),
       ]
         .slice()
         .filter(
@@ -671,7 +737,6 @@ export const GroupInfoModal = ({
             index === self.findIndex((t) => t.address === item.address)
         ),
     }));
-    
   };
 
   const initialiseMemberPaginationData = async (
@@ -718,9 +783,14 @@ export const GroupInfoModal = ({
         ),
     }));
   };
-  const memberRoleChange = (item:any): void => {
-    const acceptedMember:ChatMemberProfile[] = groupMembers?.accepted.map(member => member.address == item.to[0] ? {...member, role:item.newRole} : member);
-    console.debug(acceptedMember)
+  const memberRoleChange = (item: any): void => {
+    const acceptedMember: ChatMemberProfile[] = groupMembers?.accepted.map(
+      (member) =>
+        member.address == item.to[0]
+          ? { ...member, role: item.newRole }
+          : member
+    );
+    console.debug(acceptedMember);
     setGroupMembers((prevMembers: MembersType) => ({
       ...prevMembers,
       accepted: acceptedMember,
@@ -758,49 +828,49 @@ export const GroupInfoModal = ({
   };
   const transformParticipantJoin = async (item: any): Promise<void> => {
     if (groupInfo?.chatId === item?.chatId) {
-      const profile = await fetchUserProfile({ profileId: item?.from,user });
-      const transformedProfile = transformIUserToChatMemberProfile(profile,true);
+      const profile = await fetchUserProfile({ profileId: item?.from, user });
+      const transformedProfile = transformIUserToChatMemberProfile(
+        profile,
+        true
+      );
       addAcceptedMember([transformedProfile]);
     }
   };
- 
+
   // const transformRequestSent = async(item: any): Promise<void> => {
   //   if (item?.meta?.group && groupInfo?.chatId === item?.chatId) {
-  //     const userPromises = item?.to.map((member:string) => 
+  //     const userPromises = item?.to.map((member:string) =>
   //       fetchChatProfile({ profileId: member})
   //       .then((userRecord) => {
   //          return userRecord;
   //       })
   //       .catch(console.error)
   //    );
-  //    const users = await resolvePromisesSeq(userPromises); 
+  //    const users = await resolvePromisesSeq(userPromises);
   //    const transformedUsers = users.map((user)=>{return transformIUserToChatMemberProfile(user,false)});
   //    addAcceptedMember(transformedUsers);
   //   }
   // };
 
   const transformRoleChange = (item: any): void => {
-    if ( groupInfo?.chatId === item?.chatId) {
-      memberRoleChange(item)
-     
+    if (groupInfo?.chatId === item?.chatId) {
+      memberRoleChange(item);
     }
   };
   const transformGroupDetails = (item: any): void => {
-    if ( groupInfo?.chatId === item?.chatId) {
+    if (groupInfo?.chatId === item?.chatId) {
       const updatedGroupInfo = groupInfo;
-      if(updatedGroupInfo){
-        updatedGroupInfo.groupName= item?.meta?.name;
-        updatedGroupInfo.groupDescription=item?.meta?.description;
-        updatedGroupInfo.groupImage=item?.meta?.image;
-        updatedGroupInfo.groupCreator=item?.meta?.owner;
-        updatedGroupInfo.isPublic=!item?.meta?.private;
-        updatedGroupInfo.rules=item?.meta?.rules;
+      if (updatedGroupInfo) {
+        updatedGroupInfo.groupName = item?.meta?.name;
+        updatedGroupInfo.groupDescription = item?.meta?.description;
+        updatedGroupInfo.groupImage = item?.meta?.image;
+        updatedGroupInfo.groupCreator = item?.meta?.owner;
+        updatedGroupInfo.isPublic = !item?.meta?.private;
+        updatedGroupInfo.rules = item?.meta?.rules;
         setGroupInfo(updatedGroupInfo);
       }
-     
     }
   };
-
 
   const callMembers = async (
     page: number,

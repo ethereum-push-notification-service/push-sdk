@@ -9,7 +9,7 @@ interface ApproveChatParams {
 const useApproveChatRequest = () => {
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { account, env,pgpPrivateKey,signer } =useChatData();
+  const { account, env,user,signer } =useChatData();
   const approveChatRequest = useCallback(async (options:ApproveChatParams) => {
     const {
 
@@ -17,14 +17,7 @@ const useApproveChatRequest = () => {
       } = options || {};
       setLoading(true);
       try {
-        const response = await PushAPI.chat.approve({
-          status: 'Approved',
-          account: account,
-          senderAddress: chatId, 
-          signer:signer,           // receiver's address or chatId of a group
-          pgpPrivateKey:pgpPrivateKey,
-          env: env,
-        });
+        const response = await user?.chat.accept(chatId);
         setLoading(false);
         return response;
       } catch (error: Error | any) {
@@ -35,7 +28,7 @@ const useApproveChatRequest = () => {
       }
     },
 
-    [account,env,signer,pgpPrivateKey]
+    [account,env,signer,user]
 
   );
 

@@ -6,6 +6,9 @@ import useApproveChatRequest from '../../../hooks/chat/useApproveChatRequest';
 import { useChatData } from '../../../hooks';
 import styled from 'styled-components';
 import { IChatTheme } from '../theme';
+import { Group } from '../exportedTypes';
+import useToast from '../reusables/NewToast';
+import { MdCheckCircle } from 'react-icons/md';
 
 /**
  * @interface IThemeProps
@@ -16,26 +19,25 @@ interface IThemeProps {
 }
 export interface IApproveRequestBubbleProps {
   chatId: string;
-  chatFeed: IFeeds;
-  setChatFeed: Dispatch<IFeeds>;
+  groupInfo?: Group | null;
 }
 
 
 export const ApproveRequestBubble = ({
-  chatFeed,
+  groupInfo = null,
   chatId,
-  setChatFeed,
 }: IApproveRequestBubbleProps) => {
   const { pgpPrivateKey } = useChatData();
 
   const ApproveRequestText = {
-    GROUP: `You were invited to the group ${chatFeed?.groupInformation?.groupName}. Please accept to continue messaging in this group.`,
+    GROUP: `You were invited to the group ${groupInfo?.groupName}. Please accept to continue messaging in this group.`,
     W2W: ` Please accept to enable push chat from this wallet`,
   };
   
   const theme = useContext(ThemeContext);
   const { approveChatRequest, loading: approveLoading } =
     useApproveChatRequest();
+    const approveToast = useToast();
 
   const handleApproveChatRequest = async () => {
     try {
@@ -46,11 +48,14 @@ export const ApproveRequestBubble = ({
       const response = await approveChatRequest({
         chatId,
       });
+      
       if (response) {
-        const updatedChatFeed = { ...(chatFeed as IFeeds) };
-        updatedChatFeed.intent = response;
-
-        setChatFeed(updatedChatFeed);
+        approveToast.showMessageToast({
+          toastTitle: 'Success',
+          toastMessage: 'Group Invitation sent',
+          toastType: 'SUCCESS',
+          getToastIcon: (size) => <MdCheckCircle size={size} color="green" />,
+        });
       }
     } catch (error_: Error | any) {
       console.log(error_.message);
@@ -80,7 +85,7 @@ export const ApproveRequestBubble = ({
         color={theme.textColor?.chatReceivedBubbleText}
         lineHeight="24px"
       >
-        {chatFeed?.groupInformation
+        {groupInfo
           ? ApproveRequestText.GROUP
           : ApproveRequestText.W2W}
       </Span>

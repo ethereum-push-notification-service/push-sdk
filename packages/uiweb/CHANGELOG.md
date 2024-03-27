@@ -2,6 +2,42 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [1.1.15](https://github.com/push-protocol/push-sdk/compare/uiweb-0.0.1-alpha.44...uiweb-1.1.15) (2024-03-27)
+
+
+### Bug Fixes
+
+* add doman in user profile and chat profile and copy ([#1171](https://github.com/push-protocol/push-sdk/issues/1171)) ([e981565](https://github.com/push-protocol/push-sdk/commit/e9815656f76f99d841e0895ec4fc283abd04db16))
+* added fetch chT ([c995efb](https://github.com/push-protocol/push-sdk/commit/c995efbac23cd5f20ca92c99763371345e54da95))
+* added fetching chat ([684f4e0](https://github.com/push-protocol/push-sdk/commit/684f4e0d6de96fb583cb8f0650f802e784c7871b))
+* added modify stream ([#1159](https://github.com/push-protocol/push-sdk/issues/1159)) ([15a3771](https://github.com/push-protocol/push-sdk/commit/15a3771e44c1abd923aee221422e943d1dae421e))
+* added settings name ([#1168](https://github.com/push-protocol/push-sdk/issues/1168)) ([62620ae](https://github.com/push-protocol/push-sdk/commit/62620ae7bc75f966b72f3058a8b4a08f40d6aa14))
+* class based done for chat viewlist messageInput ([b8e7b79](https://github.com/push-protocol/push-sdk/commit/b8e7b798ba955977635edda4311c9b484463d5f7))
+* converted messageInput to class based ([fbcf296](https://github.com/push-protocol/push-sdk/commit/fbcf2969779a993baabf21bc9c3079bf6d4e09c2))
+* converted send to class based ([b3daeaa](https://github.com/push-protocol/push-sdk/commit/b3daeaa0932826bad241cff4936ada82915f0b6d))
+* debugging stream issue ([0cf2092](https://github.com/push-protocol/push-sdk/commit/0cf2092f2745c0eb776d3d4be2d003866a31cc2b))
+* debugging stream issue ([5ea8fc4](https://github.com/push-protocol/push-sdk/commit/5ea8fc491d4f7259e1eb19b75c5d6b84ecf77704))
+* fix ([28f9a11](https://github.com/push-protocol/push-sdk/commit/28f9a11e4638134a582ea1c7a8b69d780cf4c3cf))
+* fixed ([862ab33](https://github.com/push-protocol/push-sdk/commit/862ab332c99d268d0318247486b7f7790707c56a))
+* fixed ([61a81db](https://github.com/push-protocol/push-sdk/commit/61a81db4d064736ca7f7302ea6e1d9059f378af1))
+* fixed chat bugs ([f4cdbda](https://github.com/push-protocol/push-sdk/commit/f4cdbdac6088cfc31b2b555038838bd5bb795f0c))
+* fixed chatpreview and widget issues ([ff6b576](https://github.com/push-protocol/push-sdk/commit/ff6b576ed969b328c29806966daee57b397f83a2))
+* fixed lint issues ([c13c171](https://github.com/push-protocol/push-sdk/commit/c13c171886970860de15ed0d4179949a436ef225))
+* fixed merge conflicts ([db2fd58](https://github.com/push-protocol/push-sdk/commit/db2fd5860ced139b5d5cc269e1cd518e52e4e180))
+* fixed minor bugs ([2b02a65](https://github.com/push-protocol/push-sdk/commit/2b02a65907659cecfbcdbf03e78b20b60a9021c1))
+* fixed search for chatId in chatpreview ([6e3cbc7](https://github.com/push-protocol/push-sdk/commit/6e3cbc7b924083fd71238c48029dbb291b56f29a))
+* fixed signer bug ([#1073](https://github.com/push-protocol/push-sdk/issues/1073)) ([0d3fd91](https://github.com/push-protocol/push-sdk/commit/0d3fd9124ce94d77efee86783f90de6aadbaea68))
+* fixed stream and pulled alpha ([06effe2](https://github.com/push-protocol/push-sdk/commit/06effe2a66845019cbe7390b799ecfe2cd0af341))
+* hack for stream fix ([7d89449](https://github.com/push-protocol/push-sdk/commit/7d89449b91870fc205aae66377103b86ab0a64b4))
+* horizontal scroll ([#1156](https://github.com/push-protocol/push-sdk/issues/1156)) ([8fb3301](https://github.com/push-protocol/push-sdk/commit/8fb3301146469df60eb32bef5703e3acb474101d))
+* Merge branch 'main' into alpha ([53a795d](https://github.com/push-protocol/push-sdk/commit/53a795db5ec82d44597410dca670dfadd9199277))
+* merged alpha ([fb0d5fa](https://github.com/push-protocol/push-sdk/commit/fb0d5fac604aafe2f2da7d8db32eaf8ee8823f38))
+* **migrate goerli to sepolia:** migrate goerli to sepolia ([#1149](https://github.com/push-protocol/push-sdk/issues/1149)) ([490b104](https://github.com/push-protocol/push-sdk/commit/490b104902b9a509c6a8c68d5c5f33446e91e113))
+* pulled main ([b7391b6](https://github.com/push-protocol/push-sdk/commit/b7391b6318b40117d61b86ea8163b116f757c94a))
+* removed event listeners ([3363fee](https://github.com/push-protocol/push-sdk/commit/3363fee687ad8fe894c8f851e723afa00c339578))
+
+
+
 ## [0.0.1-alpha.45](https://github.com/ethereum-push-notification-service/push-sdk/compare/uiweb-0.0.1-alpha.44...uiweb-0.0.1-alpha.45) (2024-03-07)
 
 

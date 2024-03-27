@@ -151,16 +151,16 @@ const ChatPreviewListTest = () => {
 
       <div style={{background: "#ffeded", border: "1px solid rgb(226,8,128)", height: "28.5vh"}}>
         <ChatPreviewList 
-          listType={chatRequests ? "REQUESTS" : "CHATS"}
+          listType={"REQUESTS"}
           overrideAccount={address ? address : undefined}
          onChatSelected={(chatid,chatParticipant) => { console.log("Chat id: ", chatid,chatParticipant) }}
             onUnreadCountChange={(count) => { console.log("Count is: ", count) }}
             onLoading={(loadingData) => { console.log("loading data: ", loadingData) }}
             onPaging={(chats) => { console.log("paging chats are: ", chats) }}
             onPreload={(chats) => { console.log("preload chats are: ", chats) }}
-            prefillChatPreviewList={prefill}
+        //     prefillChatPreviewList={prefill}
           // listType='SEARCH'
-          // searchParamter='0x56A734ba4C7c7b117774C9aAcCEf521eBE66d65b'
+          // searchParamter='c2d544ad9d1efd5c5a593b143bf8232875c926cf28015564e70ad078b95f807e'
         />
       </div>
     </>
