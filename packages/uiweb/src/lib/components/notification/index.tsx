@@ -17,7 +17,7 @@ import chainDetails from './chainDetails';
 
 import { LinkIcon } from "../../icons/Link";
 import { useDivOffsetWidth } from "../../hooks";
-
+import ImageNotFound from "../../icons/image_not_found.png";
 import type { INotificationItemTheme} from './theme';
 import { getCustomTheme } from './theme';
 export {lightTheme as notificationLightTheme,darkTheme as notificationDarkTheme,baseTheme as notificationBaseTheme, type INotificationItemTheme} from './theme';
@@ -224,7 +224,13 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
               style={{ cursor: 'pointer' }}
               onClick={() => setImageOverlay(notifImage || '')}
             >
-              <img src={notifImage} alt="" />
+              <img
+                src={notifImage}
+                alt=""
+                onError={(e) => {
+                  e.currentTarget.src = ImageNotFound;
+                }}
+              />
             </MobileImage>
           ) : // if its a youtube url, RENDER THIS
           MediaHelper.isMediaYoutube(notifImage) ? (
