@@ -132,7 +132,7 @@ export interface GroupEventRawData {
 
 export interface GroupEventBase {
   origin: MessageOrigin;
-  timestamp: string;
+  timestamp: number
   chatId: string;
   from: string;
   meta: GroupMeta;
@@ -151,7 +151,7 @@ export interface UpdateGroupEvent extends GroupEventBase {
 export interface GroupMemberEventBase {
   event: GroupEventType | MessageEventType;
   origin: MessageOrigin;
-  timestamp: string;
+  timestamp: number
   chatId: string;
   from: string;
   to: string[];
@@ -185,7 +185,7 @@ export interface RoleEvent extends GroupMemberEventBase {
 export interface SpaceMemberEventBase {
   event: SpaceEventType | MessageEventType;
   origin: MessageOrigin;
-  timestamp: string;
+  timestamp: number
   spaceId: string;
   from: string;
   to: string[];
@@ -211,7 +211,7 @@ export interface SpaceRemoveEvent extends SpaceMemberEventBase {
 export interface MessageEvent {
   event: MessageEventType;
   origin: MessageOrigin;
-  timestamp: string;
+  timestamp: number
   chatId: string;
   from: string;
   to: string[];
@@ -239,7 +239,7 @@ export type NotificationType = keyof typeof NOTIFICATION.TYPE;
 export interface NotificationEvent {
   event: NotificationEventType;
   origin: 'other' | 'self';
-  timestamp: string;
+  timestamp: number
   from: string;
   to: string[];
   notifID: string;
@@ -298,7 +298,7 @@ export interface MessageRawData {
 export interface VideoEvent {
   event: VideoEventType;
   origin: MessageOrigin;
-  timestamp: string;
+  timestamp: number
   peerInfo: VideoPeerInfo;
   raw?: GroupEventRawData;
 }

@@ -23,6 +23,7 @@ import {
   VideoEventType,
   MessageOrigin,
   VideoEvent,
+  GroupEventBase
 } from './pushStreamTypes';
 import { VideoCallStatus, VideoPeerInfo } from '../types';
 import { VideoDataType } from '../video';
@@ -183,7 +184,7 @@ export class DataModifier {
       includeRaw
     );
 
-    const groupEvent: any = {
+    const groupEvent: GroupEventBase = {
       event: eventType,
       origin: incomingData.messageOrigin,
       timestamp: incomingData.timestamp,
@@ -233,7 +234,7 @@ export class DataModifier {
     const messageEvent: MessageEvent = {
       event: eventType,
       origin: data.messageOrigin,
-      timestamp: data.timestamp.toString(),
+      timestamp: data.timestamp,
       chatId: data.chatId, // TODO: ChatId not working for w2w
       from: data.fromCAIP10,
       to: [data.toCAIP10], // TODO: Assuming 'to' is an array in MessageEvent. Update as necessary.
@@ -496,7 +497,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: string;
+      timestamp: number;
       spaceId: string;
       from: string;
       meta: {
@@ -541,7 +542,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: string;
+      timestamp: number;
       spaceId: string;
       from: string;
       meta: {
@@ -602,7 +603,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: any;
+      timestamp: number;
       spaceId: any;
       from: any;
       to: any[];
@@ -633,7 +634,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: string;
+      timestamp: number;
       spaceId: string;
       from: string;
       to: null;
@@ -645,7 +646,7 @@ export class DataModifier {
     const baseEventData: BaseEventData = {
       event: 'reject',
       origin: data.messageOrigin === 'other' ? 'other' : 'self',
-      timestamp: data.timestamp.toString(),
+      timestamp: data.timestamp,
       spaceId: data.chatId,
       from: data.fromCAIP10,
       to: null,
@@ -664,7 +665,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: string;
+      timestamp: number;
       spaceId: string;
       from: string;
       to: null;
@@ -692,7 +693,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: string;
+      timestamp: number;
       spaceId: string;
       from: string;
       to: null;
@@ -720,7 +721,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: string;
+      timestamp: number;
       spaceId: string;
       from: string;
       to: null;
@@ -748,7 +749,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: string;
+      timestamp: number;
       spaceId: string;
       from: string;
       to: null;
@@ -776,7 +777,7 @@ export class DataModifier {
     type BaseEventData = {
       event: string;
       origin: string;
-      timestamp: string;
+      timestamp: number;
       spaceId: string;
       from: string;
       to: null;
