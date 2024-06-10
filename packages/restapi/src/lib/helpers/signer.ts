@@ -86,4 +86,21 @@ export class Signer {
       return 1; // Return default chainId
     }
   }
+
+  async isSmartContract(): Promise<boolean> {
+    let code: string;
+    const address = await this.getAddress();
+    if (this.isViemSigner(this.signer)) {
+      // Viem signer has a direct method for getCode
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      code = await this.signer.getBytecode({ address });
+    } else if ('provider' in this.signer && this.signer.provider) {
+      // EthersV5 and EthersV6
+      code = await this.signer.provider.getCode(address);
+    } else {
+      code = '0x'; // Return default
+    }
+    return code !== '0x';
+  }
 }

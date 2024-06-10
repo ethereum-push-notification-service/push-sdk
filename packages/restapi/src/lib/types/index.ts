@@ -810,6 +810,10 @@ export type encryptedPrivateKeyType = {
   salt?: string;
   preKey?: string;
   encryptedPassword?: encryptedPrivateKeyTypeV2;
+  shardInfo?: {
+    shards: { shard: any; encryptionType: string }[];
+    pattern: string;
+  };
 };
 
 export type ProgressHookType = {

@@ -2,13 +2,13 @@ import { create } from './createUser';
 import { IUser, ProgressHookType, SignerType } from '../types';
 import { profileUpdate } from './profile.updateUser';
 import { decryptPGPKey } from '../../../src/lib/helpers';
-import Constants, { ENV } from '../constants';
+import { ENCRYPTION_TYPE, ENV } from '../constants';
 
 export type CreateUserPropsWithProfile = {
   env?: ENV;
   account?: string;
   signer?: SignerType;
-  version?: typeof Constants.ENC_TYPE_V1 | typeof Constants.ENC_TYPE_V3;
+  version?: `${ENCRYPTION_TYPE}`;
   additionalMeta?: {
     NFTPGP_V1?: {
       password: string;
@@ -37,12 +37,11 @@ export const createUserWithProfile = async (
         signer: userOptions.signer,
       });
 
-
       user = await profileUpdate({
         account: user.did,
         env: userOptions.env,
         pgpPrivateKey: pk,
-        profile: userOptions.profile
+        profile: userOptions.profile,
       });
     }
     return user;

@@ -43,6 +43,8 @@ export const createUserService = async (options: CreateUserOptionsType) => {
     const epoch = Math.floor(Date.now() / 1000);
     if (user.split(':').length !== 6) {
       user = `${user}:${epoch}`;
+    } else {
+      user = user.split(':').slice(0, -1).join(':') + `:${epoch}`;
     }
   }
   const data = {

@@ -1,4 +1,4 @@
-import Constants, { ENV } from '../constants';
+import { ENCRYPTION_TYPE, ENV } from '../constants';
 import type { PushStream } from '../pushstream/PushStream';
 import {
   ChatStatus,
@@ -22,8 +22,11 @@ export interface PushAPIInitializeProps {
   env?: ENV;
   progressHook?: (progress: ProgressHookType) => void;
   account?: string | null;
-  version?: typeof Constants.ENC_TYPE_V1 | typeof Constants.ENC_TYPE_V3;
-  versionMeta?: { NFTPGP_V1?: { password: string } };
+  version?: `${ENCRYPTION_TYPE}`;
+  versionMeta?: {
+    NFTPGP_V1?: { password: string };
+    SCWPGP_V1?: { password: string };
+  };
   autoUpgrade?: boolean;
   origin?: string;
   alpha?: {

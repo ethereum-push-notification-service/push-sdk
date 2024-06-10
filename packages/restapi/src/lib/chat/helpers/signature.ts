@@ -144,6 +144,7 @@ export const verifyProfileSignature = async (
         return true;
       } else return false;
     } catch (err) {
+      // todo smart contract wallet with EIP191 sig validation
       return false;
     }
   }

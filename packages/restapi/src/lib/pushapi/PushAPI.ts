@@ -1,4 +1,4 @@
-import Constants, { ENV, PACKAGE_BUILD } from '../constants';
+import Constants, { ENCRYPTION_TYPE, ENV, PACKAGE_BUILD } from '../constants';
 import { SignerType, ProgressHookType } from '../types';
 import { InfoOptions, PushAPIInitializeProps } from './pushAPITypes';
 import * as PUSH_USER from '../user';
@@ -18,7 +18,12 @@ import {
 import { ALPHA_FEATURE_CONFIG } from '../config';
 import { Space } from './space';
 import { Video } from './video';
-import { isValidNFTCAIP, walletToPCAIP10 } from '../helpers';
+import {
+  convertToValidDID,
+  isValidNFTCAIP,
+  isValidPushCAIP,
+  walletToPCAIP10,
+} from '../helpers';
 import { LRUCache } from 'lru-cache';
 import { cache } from '../helpers/cache';
 import { v4 as uuidv4 } from 'uuid';
@@ -167,7 +172,7 @@ export class PushAPI {
       // Default options
       const defaultOptions: PushAPIInitializeProps = {
         env: ENV.STAGING,
-        version: Constants.ENC_TYPE_V3,
+        version: Constants.ENC_TYPE_V3 as `${ENCRYPTION_TYPE}`,
         autoUpgrade: true,
         account: null,
       };
@@ -213,6 +218,16 @@ export class PushAPI {
         throw new Error('Account could not be derived.');
       }
 
+      if (!isValidPushCAIP(derivedAccount)) {
+        throw new Error(`Invalid Account!`);
+      }
+
+      const pushAccount = await convertToValidDID(
+        derivedAccount,
+        settings.env,
+        signer
+      );
+
       let pgpPublicKey: string | undefined;
 
       /**
@@ -221,7 +236,7 @@ export class PushAPI {
        * If user does not exist, creates a new user and returns the decrypted PGP private key
        */
       const user = await PUSH_USER.get({
-        account: derivedAccount,
+        account: pushAccount,
         env: settings.env,
       });
 
@@ -235,6 +250,7 @@ export class PushAPI {
             if (!decryptedPGPPrivateKey) {
               decryptedPGPPrivateKey = await PUSH_CHAT.decryptPGPKey({
                 encryptedPGPPrivateKey: user.encryptedPrivateKey,
+                account: pushAccount,
                 signer: signer,
                 toUpgrade: settings.autoUpgrade,
                 additionalMeta: settings.versionMeta,
@@ -245,7 +261,7 @@ export class PushAPI {
           } else {
             const newUser = await PUSH_USER.create({
               env: settings.env,
-              account: derivedAccount,
+              account: pushAccount,
               signer,
               version: settings.version,
               additionalMeta: settings.versionMeta,
@@ -263,7 +279,7 @@ export class PushAPI {
             message: decryptionError,
           });
           console.error(decryptionError);
-          if (isValidNFTCAIP(derivedAccount)) {
+          if (isValidNFTCAIP(pushAccount)) {
             const nftDecryptionError =
               'NFT Account Detected. If this NFT was recently transferred to you, please ensure you have received the correct password from the previous owner. Alternatively, you can reinitialize for a fresh start. Please be aware that reinitialization will result in the loss of all previous account data.';
 
@@ -279,7 +295,7 @@ export class PushAPI {
       // Initialize PushAPI instance
       const api = new PushAPI(
         settings.env as ENV,
-        derivedAccount,
+        pushAccount,
         readMode,
         settings.alpha,
         decryptedPGPPrivateKey,

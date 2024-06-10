@@ -14,6 +14,7 @@
     }
   },
   "dependencies": {
+    "@lit-protocol/lit-node-client": "^5.1.0",
     "@metamask/eth-sig-util": "^5.0.2",
     "buffer": "^6.0.3",
     "crypto-js": "^4.1.1",
@@ -22,6 +23,7 @@
     "livepeer": "^2.5.8",
     "lru-cache": "^10.1.0",
     "openpgp": "^5.5.0",
+    "shamir-secret-sharing": "^0.0.3",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.7.2",
     "video-stream-merger": "^4.0.1",

@@ -22,6 +22,7 @@ export enum ENCRYPTION_TYPE {
   PGP_V2 = 'aes256GcmHkdfSha256',
   PGP_V3 = 'eip191-aes256-gcm-hkdf-sha256',
   NFTPGP_V1 = 'pgpv1:nft',
+  SCWPGP_V1 = 'pgpv1:scw',
 }
 
 /**
@@ -74,6 +75,7 @@ const Constants = {
   ENC_TYPE_V2: 'aes256GcmHkdfSha256',
   ENC_TYPE_V3: 'eip191-aes256-gcm-hkdf-sha256',
   ENC_TYPE_V4: 'pgpv1:nft',
+  ENC_TYPE_V5: 'pgpv1:scw',
   ALPHA_FEATURES,
 };
 

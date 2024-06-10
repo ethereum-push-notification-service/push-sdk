@@ -84,7 +84,9 @@ export const authUpdate = async (options: AuthUpdateProps): Promise<IUser> => {
       ? progressHook?.(PROGRESSHOOK['PUSH-AUTH-UPDATE-05'] as ProgressHookType)
       : progressHook?.(
           (PROGRESSHOOK['PUSH-AUTH-UPDATE-01'] as ProgressHookTypeFunction)(
-            ENCRYPTION_TYPE_VERSION[pgpEncryptionVersion]
+            ENCRYPTION_TYPE_VERSION[
+              pgpEncryptionVersion as keyof typeof ENCRYPTION_TYPE_VERSION
+            ]
           )
         );
     const signedPublicKey = await preparePGPPublicKey(
@@ -98,7 +100,9 @@ export const authUpdate = async (options: AuthUpdateProps): Promise<IUser> => {
       ? progressHook?.(PROGRESSHOOK['PUSH-AUTH-UPDATE-06'] as ProgressHookType)
       : progressHook?.(
           (PROGRESSHOOK['PUSH-AUTH-UPDATE-02'] as ProgressHookTypeFunction)(
-            ENCRYPTION_TYPE_VERSION[pgpEncryptionVersion]
+            ENCRYPTION_TYPE_VERSION[
+              pgpEncryptionVersion as keyof typeof ENCRYPTION_TYPE_VERSION
+            ]
           )
         );
     const encryptedPgpPrivateKey: encryptedPrivateKeyType = await encryptPGPKey(

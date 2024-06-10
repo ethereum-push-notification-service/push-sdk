@@ -6,21 +6,21 @@ import {
   getAccountAddress,
   getWallet,
 } from '../chat/helpers';
-import Constants, { ENV } from '../constants';
+import { ENV, ENCRYPTION_TYPE } from '../constants';
 import {
   isValidPushCAIP,
-  walletToPCAIP10,
   encryptPGPKey,
   preparePGPPublicKey,
   isValidNFTCAIP,
   validatePssword,
+  isValidSCWCAIP,
+  convertToValidDID,
 } from '../helpers';
 import {
   SignerType,
   encryptedPrivateKeyType,
   ProgressHookType,
   IUser,
-  encryptedPrivateKeyTypeV2,
   ProgressHookTypeFunction,
 } from '../types';
 import PROGRESSHOOK from '../progressHook';
@@ -29,9 +29,12 @@ export type CreateUserProps = {
   env?: ENV;
   account?: string;
   signer?: SignerType;
-  version?: typeof Constants.ENC_TYPE_V1 | typeof Constants.ENC_TYPE_V3;
+  version?: `${ENCRYPTION_TYPE}`;
   additionalMeta?: {
     NFTPGP_V1?: {
+      password: string;
+    };
+    SCWPGP_V1?: {
       password: string;
     };
   };
@@ -55,12 +58,16 @@ export const createUserCore = async (
 ): Promise<ICreateUser> => {
   const passPrefix = '$0Pc'; //password prefix to ensure password validation
   const {
-    env = Constants.ENV.PROD,
+    env = ENV.STAGING,
     account = null,
     signer = null,
-    version = Constants.ENC_TYPE_V3,
+    version = ENCRYPTION_TYPE.PGP_V3,
     additionalMeta = {
       NFTPGP_V1: {
+        password: passPrefix + generateRandomSecret(10),
+      },
+      // TODO: Remove Later
+      SCWPGP_V1: {
         password: passPrefix + generateRandomSecret(10),
       },
     },
@@ -79,19 +86,21 @@ export const createUserCore = async (
     if (!isValidPushCAIP(address)) {
       throw new Error(`Invalid address!`);
     }
+
+    const pushAccount = await convertToValidDID(address, env, signer);
+    // TODO: Remove Later
+    console.log(pushAccount);
+    const encryptionType = encryptionVersionForDID(
+      version,
+      pushAccount,
+      signer
+    );
+
     if (additionalMeta?.NFTPGP_V1?.password) {
       validatePssword(additionalMeta.NFTPGP_V1.password);
     }
-
-    const caip10: string = walletToPCAIP10(address);
-    let encryptionType = version;
-
-    if (isValidNFTCAIP(caip10)) {
-      // upgrade to v4 (nft encryption)
-      encryptionType = Constants.ENC_TYPE_V4;
-    } else {
-      // downgrade to v1
-      if (!signer) encryptionType = Constants.ENC_TYPE_V1;
+    if (additionalMeta?.SCWPGP_V1?.password) {
+      validatePssword(additionalMeta.SCWPGP_V1.password);
     }
 
     // Report Progress
@@ -114,20 +123,13 @@ export const createUserCore = async (
       wallet,
       additionalMeta
     );
-    if (encryptionType === Constants.ENC_TYPE_V4) {
-      const encryptedPassword: encryptedPrivateKeyTypeV2 = await encryptPGPKey(
-        Constants.ENC_TYPE_V3,
-        additionalMeta.NFTPGP_V1?.password as string,
-        wallet,
-        additionalMeta
-      );
-      encryptedPrivateKey.encryptedPassword = encryptedPassword;
-    }
+    // TODO: Remove Later
+    console.log(encryptedPrivateKey);
 
     // Report Progress
     progressHook?.(PROGRESSHOOK['PUSH-CREATE-04'] as ProgressHookType);
     const body = {
-      user: caip10,
+      user: pushAccount,
       wallet,
       publicKey: publicKey,
       encryptedPrivateKey: JSON.stringify(encryptedPrivateKey),
@@ -141,6 +143,8 @@ export const createUserCore = async (
     createdUser.decryptedPrivateKey = keyPairs.privateKeyArmored;
     return createdUser;
   } catch (err) {
+    // TODO: Remove Later
+    console.log(err);
     // Report Progress
     const errorProgressHook = PROGRESSHOOK[
       'PUSH-ERROR-00'
@@ -148,4 +152,15 @@ export const createUserCore = async (
     progressHook?.(errorProgressHook(create.name, err));
     throw Error(`[Push SDK] - API - Error - API ${create.name} -: ${err}`);
   }
+};
+
+const encryptionVersionForDID = (
+  version: `${ENCRYPTION_TYPE}`,
+  wallet: string,
+  signer: SignerType | null
+) => {
+  if (isValidNFTCAIP(wallet)) return ENCRYPTION_TYPE.NFTPGP_V1;
+  if (isValidSCWCAIP(wallet)) return ENCRYPTION_TYPE.SCWPGP_V1;
+  if (!signer) return ENCRYPTION_TYPE.PGP_V1;
+  return version;
 };

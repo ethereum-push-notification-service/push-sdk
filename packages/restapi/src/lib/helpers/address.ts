@@ -1,6 +1,8 @@
 import * as viem from 'viem';
 import Constants, { ENV } from '../constants';
 import { get } from '../user';
+import { SignerType } from '../types';
+import { Signer } from './signer';
 
 export interface AddressValidatorsType {
   [key: string]: ({ address }: { address: string }) => boolean;
@@ -102,8 +104,8 @@ export const isValidPushCAIP = (wallet: string): boolean => {
 export const convertToValidDID = async (
   wallet: string,
   env: ENV = ENV.STAGING,
-  chainId?: number,
-  provider?: any
+  signer?: SignerType | null,
+  chainId?: number
 ) => {
   /** @dev Why Not throw error? - Used by Group ChatID also */
   if (!isValidPushCAIP(wallet)) return wallet;
@@ -121,10 +123,14 @@ export const convertToValidDID = async (
     return `${wallet}:${epoch}`;
   }
 
-  // TODO: Implement SCW DID CHECK
-  if (provider) {
+  if (signer) {
     try {
+      const pushSigner = new Signer(signer);
+      const isSmartContract = await pushSigner.isSmartContract();
       // check if onChain code exists
+      if (isSmartContract) {
+        return `scw:eip155:${await pushSigner.getChainId()}:${await pushSigner.getAddress()}`;
+      }
     } catch (err) {
       // Ignore if it fails
     }
@@ -252,7 +258,7 @@ export const walletToPCAIP10 = (account: string): string => {
 };
 
 export const pCAIP10ToWallet = (wallet: string): string => {
-  if (isValidNFTCAIP(wallet)) return wallet;
+  if (isValidNFTCAIP(wallet) || isValidSCWCAIP(wallet)) return wallet;
   wallet = wallet.replace('eip155:', '');
   return wallet;
 };
