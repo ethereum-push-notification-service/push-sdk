@@ -1,0 +1,57 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/d-node-notif/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/d-node-notif",
+        "main": "packages/d-node-notif/src/index.ts",
+        "tsConfig": "packages/d-node-notif/tsconfig.lib.json",
+        "assets": ["packages/d-node-notif/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/d-node-notif/**/*.ts"]
+      }
+    },
+  "test": {
+    "executor": "@nrwl/workspace:run-commands",
+    "outputs": ["coverage/packages/d-node-notif"],
+    "options": {
+      "commands": ["cd packages/d-node-notif && yarn run test"],
+      "passWithNoTests": true
+    }
+  },
+  "ci-version": {
+    "executor": "@jscutlery/semver:version",
+    "options": {
+      "preset": "angular",
+      "commitMessageFormat": "ci(${projectName}): 🎉 cut release to ${projectName}-v${version}",
+      "postTargets": ["d-node_notif:build", "d-node_notif:ci-publish"]
+    }
+  },
+  "ci-version-beta": {
+    "executor": "@jscutlery/semver:version",
+    "options": {
+      "preset": "angular",
+      "commitMessageFormat": "ci(${projectName}): 🎉 cut beta release to ${projectName}-v${version}",
+      "postTargets": ["d-node_notif:build", "d-node_notif:ci-publish"],
+      "version": "prerelease",
+      "preid": "alpha"
+    }
+  },
+  "ci-publish": {
+    "executor": "@nrwl/workspace:run-commands",
+    "options": {
+      "command": "node tools/scripts/publish.mjs d-node_notif"
+    }
+  }
+},
+  "tags": []
+}

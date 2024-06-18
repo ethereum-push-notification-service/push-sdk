@@ -1,9 +1,9 @@
 // Load FS and Other dependency
-import * as fs from 'fs'
-import * as readline from 'readline'
+import * as fs from 'fs';
+import * as readline from 'readline';
 
 export default async () => {
- /* try {
+  /* try {
     // Load environment files
     const envpath = `${__dirname}/../.env`
     const envsamplepath = `${__dirname}/../.env.sample`
@@ -77,4 +77,4 @@ export default async () => {
     console.log('     Error on env verifier loader: %o     ', e)
     throw e
   }*/
-}
+};

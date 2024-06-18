@@ -20,7 +20,8 @@
       "@pushprotocol/restapi": ["packages/restapi/src/index.ts"],
       "@pushprotocol/socket": ["packages/socket/src/index.ts"],
       "@pushprotocol/uiembed": ["packages/uiembed/src/index.ts"],
-      "@pushprotocol/uiweb": ["packages/uiweb/src/index.ts"]
+      "@pushprotocol/uiweb": ["packages/uiweb/src/index.ts"],
+      "@sdk/d-node-notif": ["packages/d-node-notif/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

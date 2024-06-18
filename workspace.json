@@ -2,13 +2,14 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "d-node-notif": "packages/d-node-notif",
     "examples-sdk-frontend-react": "packages/examples/sdk-frontend-react",
     "ledgerlive": "packages/ledgerlive",
+    "react-native-sdk": "packages/reactnative",
     "restapi": "packages/restapi",
     "socket": "packages/socket",
     "uiembed": "packages/uiembed",
-    "uiweb": "packages/uiweb",
-    "react-native-sdk": "packages/reactnative",
-    "uireactnative": "packages/uireactnative"
+    "uireactnative": "packages/uireactnative",
+    "uiweb": "packages/uiweb"
   }
 }

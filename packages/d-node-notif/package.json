@@ -1,0 +1,43 @@
+{
+  "name": "@sdk/d-node-notif",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "ethers": "^5.0.0 || ^6.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ethers": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@metamask/eth-sig-util": "^5.0.2",
+    "buffer": "^6.0.3",
+    "crypto-js": "^4.1.1",
+    "immer": "^10.0.2",
+    "joi": "^17.9.2",
+    "lru-cache": "^10.1.0",
+    "openpgp": "^5.5.0",
+    "socket.io-client": "^4.7.2",
+    "viem": "^2.13.1"
+  },
+  "scripts": {
+    "test": "TS_NODE_PROJECT='./tsconfig.mocha.json' NODE_OPTIONS='--loader ts-node/esm' DOTENV_CONFIG_PATH='./tests/.env' mocha -r ts-node/register -r dotenv/config 'tests/**/*.test.ts' --timeout 1200000 --require tests/root.ts --serial"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/chai-as-promised": "^7.1.5",
+    "@types/crypto-js": "^4.1.1",
+    "@types/mocha": "^10.0.1",
+    "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
+    "envfile": "^7.1.0",
+    "mocha": "^10.2.0",
+    "mocha-typescript": "^1.1.17",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.2"
+  }
+}
