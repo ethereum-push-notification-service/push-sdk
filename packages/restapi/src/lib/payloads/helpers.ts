@@ -81,6 +81,65 @@ export function getPayloadForAPIInput(
 }
 
 /**
+ * This function will map the Input options passed to the SDK to the "payload" structure
+ * needed by the API input
+ *
+ * We need notificationPayload only for identityType
+ *  - DIRECT_PAYLOAD
+ *  - MINIMAL
+ */
+export function getPayloadForAPIInputV2(
+  inputOptions: ISendNotificationInputOptions,
+  recipients: any
+): INotificationPayload | null {
+  if (inputOptions?.notification && inputOptions?.payload) {
+    return {
+      notification: {
+        title: inputOptions?.notification?.title,
+        body: inputOptions?.notification?.body,
+      },
+      data: {
+        acta: inputOptions?.payload?.cta || '',
+        aimg: inputOptions?.payload?.img || '',
+        amsg: inputOptions?.payload?.body || '',
+        asub: inputOptions?.payload?.title || '',
+        type: inputOptions?.type?.toString() || '',
+        //deprecated
+        ...(inputOptions?.expiry && { etime: inputOptions?.expiry }),
+        ...(inputOptions?.payload?.etime && {
+          etime: inputOptions?.payload?.etime,
+        }),
+        //deprecated
+        ...(inputOptions?.hidden && { hidden: inputOptions?.hidden }),
+        ...(inputOptions?.payload?.hidden && {
+          hidden: inputOptions?.payload?.hidden,
+        }),
+        ...(inputOptions?.payload?.silent && {
+          silent: inputOptions?.payload?.silent,
+        }),
+        ...(inputOptions?.payload?.sectype && {
+          sectype: inputOptions?.payload?.sectype,
+        }),
+        //deprecated
+        ...(inputOptions?.payload?.metadata && {
+          metadata: inputOptions?.payload?.metadata,
+        }),
+        ...(inputOptions?.payload?.additionalMeta && {
+          additionalMeta: inputOptions?.payload?.additionalMeta,
+        }),
+        ...(inputOptions?.payload?.index && {
+          index: inputOptions?.payload?.index,
+        }),
+        timestamp: Math.floor(Date.now() / 1000),
+      },
+      recipients: recipients,
+    };
+  }
+
+  return null;
+}
+
+/**
  * This function returns the recipient format accepted by the API for different notification types
  */
 export async function getRecipients({
@@ -267,6 +326,110 @@ export async function getVerificationProof({
         'Data'
       );
       verificationProof = `eip712v2:${signature}::uid::${uuid}`;
+      break;
+    }
+    case 1: {
+      const hash = CryptoJS.SHA256(JSON.stringify(message)).toString();
+      const signature = await sign({
+        message: hash,
+        signingKey: pgpPrivateKey!,
+      });
+      verificationProof = `pgpv2:${signature}:meta:${chatId}::uid::${uuid}`;
+      break;
+    }
+    default: {
+      throw new Error('Invalid SenderType');
+    }
+  }
+  return verificationProof;
+}
+
+export async function getVerificationProofV2({
+  senderType,
+  signer,
+  chainId,
+  notificationType,
+  identityType,
+  verifyingContract,
+  payload,
+  ipfsHash,
+  graph = {},
+  uuid,
+  chatId,
+  wallet,
+  pgpPrivateKey,
+  env,
+  rules,
+}: {
+  senderType: 0 | 1;
+  signer: any;
+  chainId: number;
+  notificationType: NOTIFICATION_TYPE;
+  identityType: IDENTITY_TYPE;
+  verifyingContract: string;
+  payload: any;
+  ipfsHash?: string;
+  graph?: any;
+  uuid: string;
+  // for notifications which have additionalMeta in payload
+  chatId?: string;
+  wallet?: walletType;
+  pgpPrivateKey?: string;
+  env?: ENV;
+  rules?: VideoNotificationRules;
+}) {
+  let message = null;
+  let verificationProof = null;
+
+  switch (identityType) {
+    case IDENTITY_TYPE.MINIMAL: {
+      message = {
+        data: `${identityType}+${notificationType}+${payload.notification.title}+${payload.notification.body}`,
+      };
+      break;
+    }
+    case IDENTITY_TYPE.IPFS: {
+      message = {
+        data: `1+${ipfsHash}`,
+      };
+      break;
+    }
+    case IDENTITY_TYPE.DIRECT_PAYLOAD: {
+      const payloadJSON = JSON.stringify(payload);
+      message = {
+        data: `2+${payloadJSON}`,
+      };
+      break;
+    }
+    case IDENTITY_TYPE.SUBGRAPH: {
+      message = {
+        data: `3+graph:${graph?.id}+${graph?.counter}`,
+      };
+      break;
+    }
+    default: {
+      throw new Error('Invalid IdentityType');
+    }
+  }
+
+  switch (senderType) {
+    case 0: {
+      const type = {
+        Data: [{ name: 'data', type: 'string' }],
+      };
+      const domain = {
+        name: 'EPNS COMM V1',
+        chainId: chainId,
+        verifyingContract: verifyingContract,
+      };
+      const pushSigner = new Signer(signer);
+      const signature = await pushSigner.signTypedData(
+        domain,
+        type,
+        message,
+        'Data'
+      );
+      verificationProof = `eip712v3:${signature}::uid::${uuid}`;
       break;
     }
     case 1: {

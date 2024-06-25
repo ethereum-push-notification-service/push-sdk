@@ -1,4 +1,5 @@
 export * from './sendNotifications';
+export {sendNotificationV2} from './sendNotificationsV2';
 export {
   NOTIFICATION_TYPE,
   IDENTITY_TYPE,

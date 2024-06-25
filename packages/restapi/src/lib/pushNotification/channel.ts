@@ -147,7 +147,7 @@ export class Channel extends PushNotificationBaseClass {
         channel: options.channel ?? this.account,
         channelInfo: channelInfo,
       });
-      return await PUSH_PAYLOAD.sendNotification(lowLevelPayload);
+      return await PUSH_PAYLOAD.sendNotificationV2(lowLevelPayload);
     } catch (error) {
       throw new Error(`Push SDK Error: API : channel::send : ${error}`);
     }
