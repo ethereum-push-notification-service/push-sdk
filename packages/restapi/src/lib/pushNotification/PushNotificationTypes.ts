@@ -1,6 +1,7 @@
 import { ADDITIONAL_META_TYPE } from '../../lib/payloads/constants';
 import { GetAliasInfoOptionsType } from '../alias';
 import { NotifictaionType, ProgressHookType } from '../types';
+import { SOURCE_TYPES } from '../payloads/constants';
 
 export type SubscriptionOptions = {
   account?: string;
@@ -152,6 +153,7 @@ export type ChannelListOptions = {
   limit?: number;
   sort?: ChannelListSortType;
   order?: ChannelListOrderType;
+  filter?:  keyof typeof SOURCE_TYPES | 'ALL';
 };
 
 

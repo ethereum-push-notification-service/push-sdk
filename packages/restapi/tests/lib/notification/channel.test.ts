@@ -586,4 +586,16 @@ describe('PushAPI.channel functionality', () => {
       expect(res).not.null;
     });
   });
+
+  describe('list', async () => {
+    it('Should the channel details', async () => {
+      const res = await userAlice.channel.list({});
+      expect(res).not.null;
+    });
+
+    it('Should fetch channel details based on the filter', async () => {
+      const res = await userAlice.channel.list({ filter: 'POLYGON_TEST_AMOY' });
+      expect(res).not.null;
+    });
+  });
 });
