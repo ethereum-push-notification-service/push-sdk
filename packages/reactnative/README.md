@@ -76,13 +76,13 @@ npm install @pushprotocol/react-native-sdk
 #### Install the peer dependencies
 
 ```bash
-yarn add react-native-randombytes@3.6.1 react-native-webview@13.2.2 react-native-webview-crypto@0.0.25
+yarn add react-native-randombytes react-native-webview react-native-webview-crypto react-native-fast-openpgp react-native-get-random-values text-encoding crypto
 ```
 
 or
 
 ```bash
-npm install react-native-randombytes@3.6.1 react-native-webview@13.2.2 react-native-webview-crypto@0.0.25
+npm install react-native-randombytes react-native-webview react-native-webview-crypto react-native-fast-openpgp react-native-get-random-values text-encoding crypto
 ```
 
 #### Nodeify the crypto packages
